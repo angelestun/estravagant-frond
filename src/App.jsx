@@ -233,7 +233,7 @@ useEffect(() => {
         <Route element={<DashboardLayout cartCount={cartCount} />}>
         
           <Route path="/perfil" element={<PerfilComponent />} />
-          <Route path="/" element={<HomeComponent />} />
+          <Route path="/" element={< LandingPage/>} />
           <Route path="/home" element={<HomeComponent />} />
           <Route path="/pedidos" element={<PedidosComponent />} />
           <Route path="/productos" element={<ProductosComponent />} />

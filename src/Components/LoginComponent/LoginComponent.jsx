@@ -30,7 +30,7 @@ export default function LoginComponent() {
     const objetoParaBackend = { Correo, Contraseña };
 
     try {
-      const response = await fetch("http://localhost:3000/login", {
+      const response = await fetch("https://extravagant-back-tidu.vercel.app/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(objetoParaBackend)

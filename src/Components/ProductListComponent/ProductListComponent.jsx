@@ -12,7 +12,7 @@ const ProductListComponent = ({ addToCart, cartItems }) => {
     const fetchProducts = async () => {
       try {
     
-        const response = await fetch('http://localhost:3000/productos/all'); 
+        const response = await fetch('https://extravagant-back-tidu.vercel.app/productos/all'); 
         const data = await response.json();
         setProducts(data);
         setLoading(false);
@@ -49,7 +49,7 @@ const ProductListComponent = ({ addToCart, cartItems }) => {
         {products.filter(product => product.Stock > 0).map((product) => (
           <div key={product.ID_Producto} className="product-card">
           
-            <img src={`http://localhost:3000/uploads/products/${product.Imagen}`} alt={product.Nombre_Producto} className="product-image" />
+            <img src={`https://extravagant-back-tidu.vercel.app/uploads/products/${product.Imagen}`} alt={product.Nombre_Producto} className="product-image" />
             <div className="product-details">
               <h3 className="product-name">{product.Nombre_Producto}</h3>
               <p className="product-price">${product.Precio.toFixed(2)}</p>

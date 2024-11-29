@@ -54,7 +54,7 @@ const ProductPreviewModal = ({ product, onClose, handleAddToCart }) => {
         <div className="custom-modal-body">
           <div className="custom-modal-image-container">
             <img 
-              src={`http://localhost:3000/uploads/products/${product.Imagen}`} 
+              src={`https://extravagant-back-tidu.vercel.app/uploads/products/${product.Imagen}`} 
               alt={product.Nombre_Producto} 
               className="custom-modal-product-image" 
             />

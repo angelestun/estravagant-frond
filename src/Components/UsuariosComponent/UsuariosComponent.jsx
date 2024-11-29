@@ -35,7 +35,7 @@ const UsuariosComponent = () => {
         }
 
         try {
-            const response = await axios.get('http://localhost:3000/usuarios');
+            const response = await axios.get('https://extravagant-back-tidu.vercel.app/usuarios');
             setUsuarios(response.data);
             localStorage.setItem('cachedUsuarios', JSON.stringify(response.data));
         } catch (error) {
@@ -72,7 +72,7 @@ const UsuariosComponent = () => {
 
         if (window.confirm("¿Estás seguro de que deseas eliminar este usuario?")) {
             try {
-                await axios.delete(`http://localhost:3000/usuarios/${id}`);
+                await axios.delete(`https://extravagant-back-tidu.vercel.app/usuarios/${id}`);
                 fetchUsuarios();
                 showNotification(
                     'Éxito',
@@ -102,14 +102,14 @@ const UsuariosComponent = () => {
 
         try {
             if (selectedUsuario) {
-                await axios.put(`http://localhost:3000/usuarios/${selectedUsuario.ID_Usuario}`, usuario);
+                await axios.put(`https://extravagant-back-tidu.vercel.app/usuarios/${selectedUsuario.ID_Usuario}`, usuario);
                 showNotification(
                     'Éxito',
                     'Usuario actualizado correctamente',
                     'success'
                 );
             } else {
-                await axios.post('http://localhost:3000/usuarios', usuario);
+                await axios.post('https://extravagant-back-tidu.vercel.app/usuarios', usuario);
                 showNotification(
                     'Éxito',
                     'Usuario creado correctamente',

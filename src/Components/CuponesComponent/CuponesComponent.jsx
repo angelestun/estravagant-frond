@@ -40,7 +40,7 @@ const CuponesComponent = () => {
         }
       }
 
-      const response = await axios.get('http://localhost:3000/tienda');
+      const response = await axios.get('https://extravagant-back-tidu.vercel.app/tienda');
       setTiendas(response.data);
       localStorage.setItem('cachedTiendas', JSON.stringify(response.data));
     } catch (error) {
@@ -68,7 +68,7 @@ const CuponesComponent = () => {
         }
       }
 
-      const response = await axios.get(`http://localhost:3000/cupones?userId=${userId}`, {
+      const response = await axios.get(`https://extravagant-back-tidu.vercel.app/cupones?userId=${userId}`, {
         headers: { 'Cache-Control': 'no-cache' }
       });
       

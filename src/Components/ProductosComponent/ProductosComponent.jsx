@@ -52,7 +52,7 @@ const ProductosComponent = () => {
     if (!userData) return;
 
     try {
-      const response = await axios.get(`http://localhost:3000/tienda/${userData}`);
+      const response = await axios.get(`https://extravagant-back-tidu.vercel.app/tienda/${userData}`);
       if (response.data.length > 0) {
         const tienda = response.data[0];
         if (tienda.ID_Tienda) {
@@ -71,9 +71,9 @@ const ProductosComponent = () => {
   
     try {
       if (imagen.startsWith('uploads/')) {
-        return `http://localhost:3000/${imagen}`;
+        return `https://extravagant-back-tidu.vercel.app/${imagen}`;
       } else {
-        return `http://localhost:3000/uploads/products/${imagen}`;
+        return `https://extravagant-back-tidu.vercel.app/uploads/products/${imagen}`;
       }
     } catch (error) {
       console.error('Error con la URL de la imagen:', error);
@@ -90,7 +90,7 @@ const obtenerProductos = async () => {
 
   try {
     setLoading(true);
-    const response = await axios.get('http://localhost:3000/productos/tienda', {
+    const response = await axios.get('https://extravagant-back-tidu.vercel.app/productos/tienda', {
       params: {
         ID_Usuario: userData,
         ID_Tienda: idTienda,
@@ -153,7 +153,7 @@ const obtenerProductos = async () => {
     formData.append('ID_Tienda', idTienda);
   
     try {
-      const response = await axios.post('http://localhost:3000/productos', formData, {
+      const response = await axios.post('https://extravagant-back-tidu.vercel.app/productos', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -206,7 +206,7 @@ const obtenerProductos = async () => {
     setCurrentProducto(producto.ID_Producto);
     setIsEditMode(true);
     setModalVisible(true);
-    setImagePreview(`http://localhost:3000/uploads/products/${producto.Imagen}`);
+    setImagePreview(`https://extravagant-back-tidu.vercel.app/uploads/products/${producto.Imagen}`);
   };
 
 const handleActualizarProducto = async (e) => {
@@ -227,7 +227,7 @@ const handleActualizarProducto = async (e) => {
   }
 
   try {
-    const response = await axios.put(`http://localhost:3000/productos/${currentProducto}`, formData, {
+    const response = await axios.put(`https://extravagant-back-tidu.vercel.app/productos/${currentProducto}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
@@ -261,7 +261,7 @@ const handleActualizarProducto = async (e) => {
       return;
     }
     try {
-      await axios.delete(`http://localhost:3000/productos/${id}`);
+      await axios.delete(`https://extravagant-back-tidu.vercel.app/productos/${id}`);
       setProductos(productos.filter(producto => producto.ID_Producto !== id));
       setNotificacion('Producto eliminado con éxito.');
     } catch (error) {
@@ -342,7 +342,7 @@ const handleActualizarProducto = async (e) => {
                 <td>{producto.Marca}</td>
                 <td>
                 <img
-                    src={producto.Imagen ? `http://localhost:3000/uploads/products/${producto.Imagen}` : 'ruta/por_defecto.jpg'}
+                    src={producto.Imagen ? `https://extravagant-back-tidu.vercel.app/uploads/products/${producto.Imagen}` : 'ruta/por_defecto.jpg'}
                     alt="Imagen de Producto"
                     style={{ width: '100px', height: 'auto' }}
                     onError={(e) => { e.target.src = 'ruta/por_defecto.jpg'; }} 
@@ -529,7 +529,7 @@ const handleActualizarProducto = async (e) => {
                     <div className="flex-shrink-0">
                       {(imagePreview || nuevoProducto.Imagen) && (
                         <img
-                          src={imagePreview || `http://localhost:3000/uploads/products/${nuevoProducto.Imagen}`}
+                          src={imagePreview || `https://extravagant-back-tidu.vercel.app/uploads/products/${nuevoProducto.Imagen}`}
                           alt="Vista previa"
                           className="w-20 h-20 object-cover rounded-lg border-2 border-purple-500"
                           onError={(e) => {

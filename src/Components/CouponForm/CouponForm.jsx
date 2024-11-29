@@ -37,7 +37,7 @@ const CouponForm = () => {
 
   const fetchIdTienda = async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/tienda/${userData}`);
+      const response = await axios.get(`https://extravagant-back-tidu.vercel.app/tienda/${userData}`);
       if (response.data.length > 0) {
         const tienda = response.data[0];
         if (tienda.ID_Tienda) {
@@ -51,7 +51,7 @@ const CouponForm = () => {
 
   const fetchCupones = async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/cupones/vendedor/${userData}`);
+      const response = await axios.get(`https://extravagant-back-tidu.vercel.app/cupones/vendedor/${userData}`);
       const formattedCoupons = response.data.map(coupon => ({
         ...coupon,
         Fecha_Inicio: formatDate(coupon.Fecha_Inicio),
@@ -160,10 +160,10 @@ const CouponForm = () => {
           ID_Tienda: idTienda,
         };
   
-        await axios.put(`http://localhost:3000/cupones/${editingCoupon.ID_Cupones}`, updateCoupon);
+        await axios.put(`https://extravagant-back-tidu.vercel.app/cupones/${editingCoupon.ID_Cupones}`, updateCoupon);
         alert("Cupón actualizado y enviado para aprobación");
       } else {
-        await axios.post('http://localhost:3000/createcupones', newCoupon);
+        await axios.post('https://extravagant-back-tidu.vercel.app/createcupones', newCoupon);
         alert("Cupón enviado para aprobación");
       }
   
@@ -207,7 +207,7 @@ const handleDelete = async (id) => {
     return;
   }
   try {
-    await axios.delete(`http://localhost:3000/cupones/${id}`);
+    await axios.delete(`https://extravagant-back-tidu.vercel.app/cupones/${id}`);
     alert("Cupón eliminado con éxito");
     fetchCupones();
   } catch (error) {

@@ -37,7 +37,7 @@ export default function RegistroComponent() {
     };
   
     try {
-      const responseRegistro = await fetch("http://localhost:3000/registro", {
+      const responseRegistro = await fetch("https://localhost:8080/registro", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(objetoParaBackend)
@@ -48,7 +48,7 @@ export default function RegistroComponent() {
         const userId = dataRegistro.user.ID_Usuario;
         await registrarCarrito(userId);
 
-        const responseLogin = await fetch("http://localhost:3000/login", {
+        const responseLogin = await fetch("https://localhost:8080/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ Correo, Contraseña })
@@ -84,7 +84,7 @@ export default function RegistroComponent() {
       ID_Usuario: userId
     };
 
-    const responseCarrito = await fetch("http://localhost:3000/carrito/registro", {
+    const responseCarrito = await fetch("https://localhost:8080/carrito/registro", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(carritoObjeto)

@@ -33,7 +33,7 @@ const NotificationTester = () => {
 
     const handleTestNotification = async () => {
         try {
-            const response = await fetch('http://localhost:3000/test-notification', {
+            const response = await fetch('https://extravagant-back-tidu.vercel.app/test-notification', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

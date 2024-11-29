@@ -34,8 +34,8 @@ const CartComponent = ({ cartItems, setCartItems }) => {
 
         try {
             const [cartResponse, productsResponse] = await Promise.all([
-                axios.get(`http://localhost:3000/carrito/${userData}`),
-                axios.get(`http://localhost:3000/carrito-sin-oferta/${userData}`)
+                axios.get(`https://extravagant-back-tidu.vercel.app/carrito/${userData}`),
+                axios.get(`https://extravagant-back-tidu.vercel.app/carrito-sin-oferta/${userData}`)
             ]);
 
             if (cartResponse.status === 200) {
@@ -116,8 +116,8 @@ const CartComponent = ({ cartItems, setCartItems }) => {
         
             try {
                 const [cartResponse, productsResponse] = await Promise.all([
-                    axios.get(`http://localhost:3000/carrito/${userData}`),
-                    axios.get(`http://localhost:3000/carrito-sin-oferta/${userData}`)
+                    axios.get(`https://extravagant-back-tidu.vercel.app/carrito/${userData}`),
+                    axios.get(`https://extravagant-back-tidu.vercel.app/carrito-sin-oferta/${userData}`)
                 ]);
         
                 if (cartResponse.status === 200) {
@@ -218,7 +218,7 @@ const CartComponent = ({ cartItems, setCartItems }) => {
         
         try {
             const response = await axios.put(
-                `http://localhost:3000/carrito/${userData}`, 
+                `https://extravagant-back-tidu.vercel.app/carrito/${userData}`, 
                 { items: updatedCartItems },
                 { 
                     timeout: 5000,
@@ -263,7 +263,7 @@ const CartComponent = ({ cartItems, setCartItems }) => {
                 switch (change.type) {
                     case 'UPDATE_CART': {
                         let response = await axios.put(
-                            `http://localhost:3000/carrito/${userData}`,
+                            `https://extravagant-back-tidu.vercel.app/carrito/${userData}`,
                             { items: change.data }
                         );
                         if (response.status === 200) {
@@ -274,7 +274,7 @@ const CartComponent = ({ cartItems, setCartItems }) => {
                     }
                     case 'UPDATE_PRODUCTS_WITHOUT_OFFERS': {
                         let response = await axios.put(
-                            `http://localhost:3000/carrito-sin-oferta/${userData}`,
+                            `https://extravagant-back-tidu.vercel.app/carrito-sin-oferta/${userData}`,
                             { items: change.data }
                         );
                         if (response.status === 200) {
@@ -284,7 +284,7 @@ const CartComponent = ({ cartItems, setCartItems }) => {
                         break;
                     }
                     case 'REMOVE_ITEM': {
-                        await axios.delete('http://localhost:3000/carrito', {
+                        await axios.delete('https://extravagant-back-tidu.vercel.app/carrito', {
                             data: {
                                 ID_Usuario: change.data.userId,
                                 ID_Producto: change.data.productId,
@@ -293,7 +293,7 @@ const CartComponent = ({ cartItems, setCartItems }) => {
                         
                         if (change.data.isProductWithoutOffer) {
                             const response = await axios.get(
-                                `http://localhost:3000/carrito-sin-oferta/${userData}`
+                                `https://extravagant-back-tidu.vercel.app/carrito-sin-oferta/${userData}`
                             );
                             if (response.status === 200) {
                                 setProductsWithoutOffers(response.data);
@@ -301,7 +301,7 @@ const CartComponent = ({ cartItems, setCartItems }) => {
                             }
                         } else {
                             const response = await axios.get(
-                                `http://localhost:3000/carrito/${userData}`
+                                `https://extravagant-back-tidu.vercel.app/carrito/${userData}`
                             );
                             if (response.status === 200) {
                                 setCartItems(response.data);
@@ -344,7 +344,7 @@ const CartComponent = ({ cartItems, setCartItems }) => {
         if (!userData) return;
         
         try {
-            await axios.put(`http://localhost:3000/carrito-sin-oferta/${userData}`, { items: updatedProducts });
+            await axios.put(`https://extravagant-back-tidu.vercel.app/carrito-sin-oferta/${userData}`, { items: updatedProducts });
             localStorage.setItem('productsWithoutOffers', JSON.stringify(updatedProducts));
             localStorage.setItem('productsWithoutOffersTimestamp', Date.now().toString());
         } catch (error) {
@@ -465,7 +465,7 @@ const CartComponent = ({ cartItems, setCartItems }) => {
             );
         } else {
             try {
-                await axios.delete('http://localhost:3000/carrito', {
+                await axios.delete('https://extravagant-back-tidu.vercel.app/carrito', {
                     data: {
                         ID_Usuario: userData,
                         ID_Producto: productId,
@@ -474,7 +474,7 @@ const CartComponent = ({ cartItems, setCartItems }) => {
                 
                 if (isProductWithoutOffer) {
                     const response = await axios.get(
-                        `http://localhost:3000/carrito-sin-oferta/${userData}`
+                        `https://extravagant-back-tidu.vercel.app/carrito-sin-oferta/${userData}`
                     );
                     if (response.status === 200) {
                         setProductsWithoutOffers(response.data);
@@ -482,7 +482,7 @@ const CartComponent = ({ cartItems, setCartItems }) => {
                     }
                 } else {
                     const response = await axios.get(
-                        `http://localhost:3000/carrito/${userData}`
+                        `https://extravagant-back-tidu.vercel.app/carrito/${userData}`
                     );
                     if (response.status === 200) {
                         setCartItems(response.data);
@@ -528,7 +528,7 @@ const CartComponent = ({ cartItems, setCartItems }) => {
                             <div key={item.ID_Producto} className="cart-item">
                                 <img 
                                     src={item.Imagen?.trim() ? 
-                                        `http://localhost:3000/uploads/products/${item.Imagen}` : 
+                                        `https://extravagant-back-tidu.vercel.app/uploads/products/${item.Imagen}` : 
                                         'http://via.placeholder.com/150'
                                     } 
                                     alt={item.Nombre_Producto || "Producto sin nombre"} 
@@ -606,7 +606,7 @@ const CartComponent = ({ cartItems, setCartItems }) => {
                                     <div key={item.ID_Producto} className="cart-item">
                                         <img 
                                             src={item.Imagen?.trim() ? 
-                                                `http://localhost:3000/uploads/products/${item.Imagen}` : 
+                                                `https://extravagant-back-tidu.vercel.app/uploads/products/${item.Imagen}` : 
                                                 'http://via.placeholder.com/150'
                                             } 
                                             alt={item.Nombre_Producto || "Producto sin nombre"} 

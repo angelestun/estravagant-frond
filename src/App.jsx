@@ -142,7 +142,7 @@ useEffect(() => {
 
   const fetchProductsWithoutOffers = async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/carrito-sin-oferta/${userId}`);
+      const response = await axios.get(`https://extravagant-back-tidu.vercel.app/carrito-sin-oferta/${userId}`);
       const fetchedProducts = response.data || [];
       setProductsWithoutOffers(fetchedProducts); 
       localStorage.setItem('productsWithoutOffers', JSON.stringify(fetchedProducts)); 

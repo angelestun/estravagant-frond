@@ -54,7 +54,7 @@ const StoreListComponent = () => {
         });
 
         const userId = localStorage.getItem('userId');
-        await fetch('http://localhost:3000/subscribe', {
+        await fetch('https://extravagant-back-tidu.vercel.app/subscribe', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -82,7 +82,7 @@ const StoreListComponent = () => {
       }
 
       try {
-        const response = await fetch('http://localhost:3000/tienda');
+        const response = await fetch('https://extravagant-back-tidu.vercel.app/tienda');
         if (response.ok) {
           const data = await response.json();
           const activeStores = data.filter(store => store.activo === 1);
@@ -112,7 +112,7 @@ const StoreListComponent = () => {
         if (timeDiff > 5 * 60 * 1000) {
           const fetchStores = async () => {
             try {
-              const response = await fetch('http://localhost:3000/tienda');
+              const response = await fetch('https://extravagant-back-tidu.vercel.app/tienda');
               if (response.ok) {
                 const data = await response.json();
                 const activeStores = data.filter(store => store.activo === 1);
@@ -152,7 +152,7 @@ const StoreListComponent = () => {
             >
               {store.logo && (
                 <img
-                  src={`http://localhost:3000/uploads/${store.logo}`}
+                  src={`https://extravagant-back-tidu.vercel.app/uploads/${store.logo}`}
                   alt={`${store.NombreTienda} logo`}
                   className="store-logo"
                 />

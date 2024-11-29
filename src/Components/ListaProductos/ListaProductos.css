@@ -1,0 +1,256 @@
+.lista-productos-container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.lista-productos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+  gap: 1rem;
+  padding: 0;
+}
+
+.tarjeta-producto {
+  background-color: #f4f4f4;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  position: relative; 
+  transition: transform 0.2s ease;
+}
+
+.tarjeta-producto:hover {
+  transform: translateY(-5px); 
+}
+
+.imagen-producto {
+  width: 100%;
+  height: auto;
+  max-height: 200px;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  object-fit: contain; 
+}
+
+.detalles-producto {
+  flex-grow: 1;
+  text-align: center;
+}
+
+.nombre-producto {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.descripcion-producto {
+  font-size: 1rem;
+  color: #666666;
+  margin-bottom: 0.5rem;
+}
+
+.precio-producto {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 0.5rem;
+}
+
+.cantidad-vendida {
+  font-size: 0.9rem;
+  color: #888;
+  margin-bottom: 1rem;
+}
+
+.contenedor-botones {
+  display: flex;
+  justify-content: space-between;
+  opacity: 0; 
+  transition: opacity 0.3s ease;
+  width: 100%; 
+}
+
+.tarjeta-producto:hover .contenedor-botones {
+  opacity: 1;
+}
+
+.boton-agregar-carrito,
+.boton-previsualizar {
+  background-color: #6a0dad;
+  color: #ffffff;
+  padding: 0.5rem; 
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 0.9rem; 
+  width: 48%; 
+  text-align: center;
+}
+
+.boton-agregar-carrito:hover,
+.boton-previsualizar:hover {
+  background-color: #CDA434;
+}
+
+.ofertas-destacadas {
+  background-color: #f0f8ff;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 2px solid  #003366;
+  border-radius: 5px;
+  animation: highlight 0.5s ease-in-out;
+}
+
+.tarjeta-producto-destacada {
+  border: 1px solid  #003366;
+  padding: 10px;
+  margin: 10px;
+  border-radius: 5px;
+  transition: transform 0.2s;
+}
+
+.tarjeta-producto-destacada:hover {
+  transform: scale(1.05);
+}
+
+.titulo-ofertas-destacadas {
+  color: #475463; 
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem; 
+  text-align: center;
+}
+
+.oferta-dos-por-uno {
+  color: #006622; 
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+
+/* Pantallas pequeñas (móviles) */
+@media (max-width: 768px) {
+  .lista-productos-container {
+    padding: 1rem; 
+  }
+
+  .lista-productos {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+    gap: 1rem;
+  }
+
+  .tarjeta-producto {
+    padding: 1rem;
+  }
+
+  .imagen-producto {
+    max-height: 180px; 
+  }
+
+  .nombre-producto {
+    font-size: 1rem; 
+  }
+
+  .precio-producto, .cantidad-vendida {
+    font-size: 1rem;
+  }
+
+  .contenedor-botones {
+    flex-direction: column; 
+    gap: 0.5rem;
+  }
+
+  .boton-agregar-carrito, .boton-previsualizar {
+    font-size: 0.8rem;
+    width: 100%; 
+  }
+
+  .titulo-ofertas-destacadas {
+    font-size: 1.2rem;
+  }
+
+  .oferta-dos-por-uno {
+    font-size: 1rem;
+  }
+}
+
+/* Pantallas aún más pequeñas (móviles en modo retrato) */
+@media (max-width: 480px) {
+  .lista-productos {
+    grid-template-columns: 1fr; 
+  }
+
+  .tarjeta-producto {
+    padding: 0.8rem; 
+  }
+
+  .imagen-producto {
+    max-height: 160px; 
+  }
+
+  .nombre-producto {
+    font-size: 0.9rem;
+  }
+
+  .precio-producto, .cantidad-vendida {
+    font-size: 0.9rem;
+  }
+
+  .boton-agregar-carrito, .boton-previsualizar {
+    font-size: 0.75rem;
+    padding: 0.5rem;
+    width: 100%;
+  }
+
+  .titulo-ofertas-destacadas {
+    font-size: 1.1rem;
+  }
+
+  .oferta-dos-por-uno {
+    font-size: 0.9rem;
+  }
+}
+
+/* Botones en contenedor */
+.contenedor-botones {
+  display: flex;
+  justify-content: space-between;
+  opacity: 0; 
+  transition: opacity 0.3s ease;
+  width: 100%; 
+}
+
+/* Visibilidad de botones en hover */
+.tarjeta-producto:hover .contenedor-botones,
+.tarjeta-producto-destacada:hover .contenedor-botones {
+  opacity: 1; 
+}
+
+.offline-banner {
+  background-color: #ff9800;
+  color: white;
+  text-align: center;
+  padding: 8px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  margin-bottom: 16px;
+  border-radius: 4px;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.boton-agregar-carrito:disabled,
+.boton-previsualizar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #ccc;
+}

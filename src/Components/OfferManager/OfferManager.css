@@ -1,0 +1,267 @@
+/* Estilos generales */
+
+/* Título principal */
+.offer_h1 {
+    text-align: center;
+    margin-top: 20px;
+    color: #333;
+}
+
+/* Contenedor de la tabla */
+.table-container {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow-x: auto; /* Permite desplazamiento horizontal */
+}
+
+/* Estilos para la tabla */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+th {
+    background-color: #8c4caf;
+    color: white;
+}
+
+/* Botones */
+button {
+    background-color: #4CAF50; 
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #5a45a0;
+}
+
+/* Modal */
+.offer-modal {
+    background-color: white;
+    padding: 15px; 
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    width: 350px; 
+}
+
+.offer-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.offer-modal h2 {
+    margin-top: 0;
+}
+
+.offer-modal label {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.offer-modal input,
+.offer-modal select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Estilo para la columna de estado */
+tr td:nth-child(8) {
+    font-weight: bold;
+}
+
+tr td:nth-child(8):contains('Activo') {
+    color: green;
+}
+
+tr td:nth-child(8):contains('Inactivo') {
+    color: orange;
+}
+
+/* Botones de envío y creación */
+.offer-submit-button, .offer-create-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.offer-create-button {
+    margin-top: 20px;
+    display: inline-block;
+}
+
+/* Grupo de botones (Edición, Toggle, Delete) */
+.button-group {
+    display: flex;
+    gap: 5px; 
+}
+
+.edit-button, .delete-button {
+    width: 100px; 
+    padding: 5px; 
+    border: none;
+    border-radius: 4px; 
+    cursor: pointer;
+    transition: background-color 0.3s ease; 
+}
+
+.edit-button {
+    background-color: blue;
+    color: white;
+}
+
+.delete-button {
+    background-color: rgb(255, 0, 0); 
+}
+
+.edit-button:hover,
+.toggle-button:hover,
+.delete-button:hover {
+    opacity: 0.8; 
+}
+
+/* Media Queries para Responsividad */
+
+/* Pantallas pequeñas (hasta 600px) */
+@media (max-width: 600px) {
+    .table-container {
+        padding: 10px;
+    }
+
+    table {
+        font-size: 14px; 
+    }
+
+    th, td {
+        padding: 8px;
+    }
+
+    tr td:nth-child(8),
+    tr th:nth-child(8) {
+        display: none;
+    }
+
+    .button-group {
+        flex-direction: column; 
+        gap: 10px;
+    }
+
+    .offer-modal {
+        width: 90%; 
+    }
+}
+
+/* Pantallas medianas (tabletas, hasta 768px) */
+@media (max-width: 768px) {
+    .table-container {
+        padding: 15px;
+    }
+
+    table {
+        font-size: 16px; 
+    }
+
+    th, td {
+        padding: 10px;
+    }
+
+    .offer-modal {
+        width: 80%; 
+    }
+
+    .button-group {
+        flex-direction: row; 
+    }
+}
+
+/* Pantallas grandes (escritorio, hasta 1024px) */
+@media (max-width: 1024px) {
+    .table-container {
+        padding: 20px;
+    }
+
+    table {
+        font-size: 18px; 
+    }
+
+    th, td {
+        padding: 12px;
+    }
+
+    .offer-modal {
+        width: 60%; 
+    }
+
+    .button-group {
+        flex-direction: row;
+    }
+}
+
+.button-group {
+    display: flex;
+    gap: 10px; 
+}
+
+.offer-edit-button,
+.offer-delete-button {
+    padding: 10px 20px; 
+    font-size: 14px; 
+    border: none; 
+    border-radius: 5px; 
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.offer-edit-button {
+    background-color: #4CAF50; 
+    color: white;
+}
+
+.offer-delete-button {
+    background-color: #F44336; 
+    color: white;
+}
+
+.offer-edit-button:hover {
+    background-color: #45a049; 
+}
+
+.offer-delete-button:hover {
+    background-color: #e53935;
+}
+
+.offer-edit-button:focus,
+.offer-delete-button:focus {
+    outline: none; 
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.5);
+}
+.offer-delete-button:focus {
+    box-shadow: 0 0 0 2px rgba(244, 67, 54, 0.5); 
+}

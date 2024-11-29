@@ -1,0 +1,171 @@
+.coupon-form {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 800px;
+  margin: 20px auto;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.coupon-form h1 {
+  text-align: center;
+  color: #333;
+}
+
+.coupon-form h2 {
+  text-align: center;
+  margin-top: 40px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  box-sizing: border-box;
+  background-color: #fff;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+button[type="submit"] {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+button[type="submit"]:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+button[type="submit"]:focus {
+  outline: none;
+  box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.5);
+}
+
+button[type="submit"]:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.coupons-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+}
+
+.coupon-card {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  width: 250px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.coupon-card:hover {
+  transform: scale(1.02);
+}
+
+.coupon-details {
+  margin-bottom: 12px;
+}
+
+.coupon-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.edit-btn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s; 
+}
+
+.edit-btn:hover {
+  background-color: #218838;
+  transform: scale(1.05);
+}
+
+.edit-btn:focus {
+  outline: none;
+  box-shadow: 0px 0px 5px rgba(40, 167, 69, 0.5);
+}
+
+.delete-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s; 
+}
+
+.delete-btn:hover {
+  background-color: #c82333;
+  transform: scale(1.05); 
+}
+
+.delete-btn:focus {
+  outline: none;
+  box-shadow: 0px 0px 5px rgba(220, 53, 69, 0.5);
+}
+
+@media (max-width: 600px) {
+  .coupon-form {
+    padding: 15px;
+    margin: 10px;
+  }
+
+  button[type="submit"] {
+    font-size: 16px;
+  }
+}
+.coupon-card.activo {
+  background-color: #c8e6c9; 
+}
+
+.coupon-card.inactivo {
+  background-color: #e0e0e0; 
+}
+
+.coupon-card.expirado {
+  background-color: #ffccbc; 
+}

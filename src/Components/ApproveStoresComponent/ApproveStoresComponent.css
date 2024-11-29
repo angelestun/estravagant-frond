@@ -1,0 +1,73 @@
+.approve-stores-container {
+  padding: 20px;
+}
+
+.tiendas-list {
+  display: grid; 
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+  gap: 15px; 
+}
+
+.tienda-card {
+  display: flex;
+  flex-direction: column; 
+  justify-content: space-between;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  height: auto; 
+}
+
+.tienda-details {
+  flex-grow: 1;
+  margin-bottom: 15px; 
+}
+
+.store-name-admin {
+  font-size: 1.5em; 
+  color: #007bff; 
+  margin: 0 0 10px; 
+}
+
+.tienda-logo {
+  width: 100px; 
+  height: 100px; 
+  border-radius: 50%; 
+  object-fit: cover;
+  margin-bottom: 10px; 
+}
+
+.tienda-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px; 
+}
+
+.approve-button, .reject-button {
+  padding: 10px; 
+  flex: 1; 
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.approve-button {
+  background-color: #4CAF50; 
+  color: white;
+}
+
+.reject-button {
+  background-color: #f44336; 
+  color: white;
+}
+
+.title-container {
+  text-align: center;
+  margin-bottom: 20px;
+  padding: 10px; 
+  background-color: #e9f7ff; 
+  border-radius: 8px; 
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+}

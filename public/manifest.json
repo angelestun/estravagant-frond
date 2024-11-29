@@ -1,0 +1,60 @@
+{
+  "short_name": "ES",
+  "name": "Extravagant Style",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/android-chrome-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot1.png",
+      "type": "image/png",
+      "sizes": "540x720",
+      "form_factor": "narrow",
+      "label": "Pantalla de inicio en móvil"
+    },
+    {
+      "src": "/screenshot2.png",
+      "type": "image/png",
+      "sizes": "720x540",
+      "form_factor": "wide",
+      "label": "Vista de escritorio"
+    }
+  ],
+  "id": "/",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff",
+  "description": "Tu tienda de calzado exclusivo",
+  "orientation": "portrait",
+  "categories": ["shopping", "lifestyle"],
+  "scope": "/",
+  "prefer_related_applications": false,
+  "permissions": [
+    "network-state",
+    "notifications"
+  ],
+  "serviceworker": {
+    "public": "/service-worker.js",
+    "scope": "/",
+    "update_via_cache": "none"
+  },
+  "offline_enabled": true,
+  "lang": "es-MX"
+}

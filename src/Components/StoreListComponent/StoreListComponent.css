@@ -1,0 +1,91 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.store-list-container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.store-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  width: 100%;
+}
+
+.store-card {
+  background-color: #f4f4f4;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 300px; 
+  position: relative;
+  overflow: hidden; 
+  transition: transform 0.3s ease; 
+}
+
+.store-card:hover {
+  transform: translateY(-10px); 
+}
+
+.store-logo {
+  width: 100px; 
+  height: 100px; 
+  border-radius: 50%; 
+  object-fit: cover; 
+  margin-bottom: 1rem;
+  display: block; 
+}
+.store-details {
+  flex-grow: 1;
+  text-align: center;
+}
+
+.store-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.store-description {
+  font-size: 1rem;
+  color: #666666;
+  margin-bottom: 0.5rem;
+}
+
+.verified-badge {
+  font-size: 1rem;
+  color: #4caf50;
+  margin-left: 0.5rem;
+}
+
+.visit-button {
+  background-color: #6a0dad;
+  color: #ffffff;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, opacity 0.3s ease;
+  opacity: 0; 
+  position: absolute;
+  bottom: 20px;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.store-card:hover .visit-button {
+  opacity: 1; 
+}
+
+.visit-button:hover {
+  background-color: #CDA434;
+}
+
+

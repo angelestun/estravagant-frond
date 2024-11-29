@@ -1,0 +1,355 @@
+/* Estilo base del checkout */
+.checkout {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif;
+}
+
+/* Resumen del pedido */
+.order-summary {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+h2 {
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+.item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.item-name {
+    font-weight: bold;
+}
+
+.item-price-c {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.1rem;
+    color: #333;
+    margin: 0;
+}
+
+/* Detalles del resumen */
+.summary-details {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #ccc;
+}
+
+/* Subtotal y total */
+.subtotal, .total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 18px;
+}
+
+/* Descuento */
+.discount {
+    display: flex;
+    justify-content: space-between;
+    color: #dc3545; /* Color para descuento */
+}
+
+/* Sección de cupones */
+.coupon-section {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.coupon-input-container {
+    display: flex;
+    justify-content: center;
+}
+
+.coupon-input-container input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.apply-coupon-btn {
+    padding: 10px 15px;
+    background-color: #6a0dad;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.apply-coupon-btn:hover {
+    background-color: #CDA434;
+}
+
+/* Mensaje de error */
+.error-message {
+    color: red;
+    margin-top: 10px;
+}
+
+/* Sección de pago */
+.payment-section {
+    text-align: center;
+}
+
+.payment-btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.payment-btn:hover {
+    background-color: #0056b3;
+}
+
+.price-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+/* Media queries para pantallas pequeñas */
+
+/* Pantallas de hasta 768px (tabletas y móviles grandes) */
+@media (max-width: 768px) {
+    .checkout {
+        padding: 15px;
+        max-width: 90%; 
+    }
+
+
+    .order-summary h2 {
+        font-size: 20px; 
+    }
+
+    .item {
+        flex-direction: column;
+        padding: 12px 0;
+    }
+
+    .item-name {
+        font-size: 1.1rem;
+    }
+
+    .item-price-c {
+        font-size: 1rem;
+    }
+
+  
+    .subtotal, .total {
+        font-size: 16px;
+    }
+
+    .coupon-input-container input {
+        padding: 8px;
+    }
+
+    .apply-coupon-btn {
+        padding: 8px 12px;
+    }
+
+    .payment-btn {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Pantallas de hasta 480px (móviles pequeños) */
+@media (max-width: 480px) {
+    .checkout {
+        padding: 10px;
+        max-width: 100%; 
+    }
+
+    .order-summary h2 {
+        font-size: 18px; 
+    }
+
+    .item {
+        flex-direction: column; 
+        padding: 10px 0;
+    }
+
+    .item-name {
+        font-size: 1rem; 
+    }
+
+    .item-price-c {
+        font-size: 0.9rem; 
+    }
+
+    .subtotal, .total {
+        font-size: 14px; 
+    }
+
+    .coupon-input-container input {
+        padding: 8px;
+    }
+
+    .apply-coupon-btn {
+        padding: 8px 10px;
+    }
+
+    .payment-btn {
+        padding: 8px 14px;
+        font-size: 0.9rem;
+    }
+}
+
+.payment-btn:hover {
+    background-color: #0056b3;
+}
+
+.price-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  
+.checkout {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .order-summary {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  h2 {
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 15px;
+  }
+  
+  .item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .item-name {
+    font-weight: bold;
+  }
+  
+  .price-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  
+  .item-price-c {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.1rem;
+    color: #333;
+    margin: 0;
+  }
+  
+
+  .item-price-original {
+    text-decoration: line-through;
+    color: #5f5f5f; 
+    font-size: 1.2 rem;
+  }
+  
+  .offer-tag {
+    font-size: 0.8em;
+    color: #28a745;
+    margin-left: 0.5rem;
+  }
+  
+  .summary-details {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #ccc;
+  }
+  
+  .subtotal, .total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 18px;
+  }
+  
+  .discount, .coupon {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
+  
+  .discount p, .coupon p {
+    font-size: 1.1rem;
+  }
+  
+
+  .coupon {
+    color: #dc3545; 
+  }
+  
+
+  .coupon-section {
+    margin: 20px 0;
+    text-align: center;
+  }
+  
+  .coupon-input-container {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .coupon-input-container input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .apply-coupon-btn {
+    padding: 10px 15px;
+    background-color: #6a0dad;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .apply-coupon-btn:hover {
+    background-color: #CDA434;
+  }
+  
+  .error-message {
+    color: red;
+    margin-top: 10px;
+  }
+  
+  .payment-section {
+    text-align: center;
+  }
+  
+  .payment-btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    
+  }  

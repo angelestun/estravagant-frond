@@ -1,0 +1,102 @@
+/* PedidosComponent.css */
+.pedidos-container {
+  margin: 20px;
+}
+
+.table-container {
+  margin-top: 20px;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.pedidos-table {
+  width: 100%;
+  border-spacing: 0;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pedidos-table th, .pedidos-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #CDA434;
+}
+
+.pedidos-table th {
+  background-color: #CDA434;
+  font-weight: bold;
+}
+
+.expand-btn {
+  background-color:#6a0dad;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.expand-btn:hover {
+  background-color: #CDA434;
+}
+
+.expanded-row {
+  background-color: #f9f9f9;
+}
+
+.pedido-details {
+  padding: 20px;
+}
+
+.pedido-details h4 {
+  margin-bottom: 20px;
+}
+
+.pedido-details-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.producto-card {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.producto-info {
+  margin-bottom: 10px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.pagination-btn-p {
+  background-color: #6a0dad;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pagination-btn-p:disabled {
+  background-color: #ddd;
+  cursor: not-allowed;
+}
+
+.pagination-btn-p:hover:not(:disabled) {
+  background-color: #CDA434;
+}
+
+.page-info {
+  margin: 0 10px;
+  font-size: 16px;
+}

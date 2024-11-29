@@ -1,0 +1,19 @@
+/* Utility classes para responsividad */
+.mobile-only {
+    display: none !important;
+  }
+  
+  .desktop-only {
+    display: block !important;
+  }
+  
+  /* Breakpoints específicos */
+  @media (max-width: 768px) {
+    .mobile-only {
+      display: block !important;
+    }
+  
+    .desktop-only {
+      display: none !important;
+    }
+  }

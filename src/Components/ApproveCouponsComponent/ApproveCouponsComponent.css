@@ -1,0 +1,174 @@
+.seller-profile-form {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  text-align: center;
+  color: #007bff;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.title-container {
+  text-align: center;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #e9f7ff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.message {
+  color: #d9534f;
+  text-align: center;
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.cupon {
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+}
+
+.cupon h2 {
+  margin: 0 0 10px;
+  font-size: 18px;
+  color: #333;
+}
+
+.cupon p {
+  margin: 5px 0;
+  color: #555;
+}
+
+.cupon-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.approve-btn,
+.reject-btn {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  flex: 1; 
+  margin: 0 5px; 
+  transition: background-color 0.3s;
+}
+
+.approve-btn {
+  background-color: #007bff;
+  color: white;
+}
+
+.approve-btn:hover {
+  background-color: #0056b3;
+}
+
+.reject-btn {
+  background-color: #d9534f;
+  color: white;
+}
+
+.reject-btn:hover {
+  background-color: #c9302c;
+}
+
+/* Estilos del modal */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000; 
+}
+
+.custom-modal {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  max-width: 400px; 
+  width: 100%; 
+}
+
+.custom-modal textarea {
+  width: 100%; 
+  resize: none; 
+  margin-top: 10px; 
+  padding: 10px;
+  border: 1px solid #ccc; 
+  border-radius: 5px; 
+  box-sizing: border-box;
+}
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.confirm-btn,
+.cancel-btn {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  flex: 1; 
+  margin: 0 5px; 
+}
+
+.confirm-btn {
+  background-color: #007bff;
+  color: white;
+}
+
+.confirm-btn:hover {
+  background-color: #0056b3;
+}
+
+.cancel-btn {
+  background-color: #ccc;
+  color: white;
+}
+
+.cancel-btn:hover {
+  background-color: #aaa;
+}
+
+/* Estilos responsivos */
+@media (max-width: 600px) {
+  .cupon {
+      flex-direction: column;
+  }
+
+  .cupon-actions {
+      flex-direction: column;
+      align-items: stretch;
+  }
+}
+.store-name-admin {
+  font-size: 1.5em; 
+  color: #007bff;
+  margin: 0 0 10px; 
+}

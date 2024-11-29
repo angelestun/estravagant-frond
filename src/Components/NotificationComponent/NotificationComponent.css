@@ -1,0 +1,38 @@
+/* src/components/NotificationComponent/NotificationComponent.css */
+.notification-container {
+    padding: 1.5rem;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    margin: 1rem 0;
+    text-align: center;
+}
+
+.notification-message {
+    margin-bottom: 1rem;
+    color: #4a5568;
+}
+
+.notification-button {
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #7c4dff;
+    color: white;
+}
+
+.notification-button:hover:not(:disabled) {
+    background-color: #6200ea;
+    transform: translateY(-1px);
+}
+
+.notification-button.active {
+    background-color: #4a148c;
+}
+
+.notification-button:disabled {
+    background-color: #e2e8f0;
+    cursor: not-allowed;
+}

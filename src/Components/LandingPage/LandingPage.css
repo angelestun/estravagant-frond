@@ -1,0 +1,136 @@
+/* Importamos la fuente Poppins de Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+.landing-page {
+    position: relative;
+    height: 100vh;
+    width: 100vw; 
+    background-image: url('/landing.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Poppins', sans-serif;
+    overflow: hidden; 
+    animation: zoomIn 10s infinite alternate; 
+}
+
+.overlay {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8); /* Increased opacity for better contrast */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    padding: 20px;
+    animation: fadeIn 2s ease-out; 
+}
+
+.title {
+    font-size: 50px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Added text shadow for better readability */
+    letter-spacing: 2px;
+    animation: fadeIn 1s ease-out;
+}
+
+.subtitle {
+    font-size: 24px;
+    margin-bottom: 30px;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Added text shadow */
+    font-weight: 400;
+    letter-spacing: 1px;
+    animation: fadeIn 1.5s ease-out; 
+}
+
+.buttons-container {
+    display: flex;
+    justify-content: center; 
+    gap: 20px; 
+    margin-top: 30px;
+    animation: fadeIn 2s ease-out;
+}
+
+.shop-button {
+    padding: 15px 40px;
+    font-size: 18px;
+    background-color: #6a0dad;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 5px;
+    width: 180px; 
+    text-align: center;
+    white-space: nowrap;
+    transition: background-color 0.3s;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Added subtle shadow */
+}
+
+.shop-button:hover {
+    background-color: #CDA434;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes zoomIn {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(1.05);
+    }
+}
+
+.about-us {
+    margin-top: 30px;
+    font-size: 16px;
+    text-align: center;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+  
+.about-us a {
+    color: #ffd700; /* Changed to a more visible gold color */
+    text-decoration: none;
+    font-weight: 600;
+}
+  
+.about-us a:hover {
+    text-decoration: underline;
+}
+  
+/* Estilo para el enlace de contacto */
+.contact-link {
+    margin-top: 30px;
+    font-size: 16px;
+    text-align: center;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+  
+.contact-link a {
+    color: #ffd700;
+    text-decoration: none;
+    font-weight: 600;
+}
+  
+.contact-link a:hover {
+    text-decoration: underline;
+}

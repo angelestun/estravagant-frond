@@ -1,0 +1,218 @@
+/* Estilo general para el contenedor de los usuarios */
+.usuarios-container {
+    padding: 20px;
+}
+
+/* Estilo de la tabla */
+.usuarios-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;  /* Espacio inferior */
+}
+
+/* Estilo de celdas y encabezados */
+.usuarios-table th,
+.usuarios-table td {
+    border: 1px solid #ddd;
+    padding: 12px;  /* Más padding para mayor legibilidad */
+    text-align: left;
+}
+
+/* Estilo de los encabezados */
+.usuarios-table th {
+    background-color: #e7c5ff;
+    font-weight: bold;
+}
+
+/* Estilos de los botones Editar y Eliminar */
+.edit-button,
+.delete-button {
+    margin-right: 10px;
+}
+
+/* Estilos específicos para los botones de editar y eliminar */
+.buttons-container-usuario {
+    display: flex;
+    gap: 10px;  /* Espacio entre los botones */
+    justify-content: flex-start;
+    align-items: center;
+}
+
+/* Diseño de los botones de Editar y Eliminar */
+.edit-button-usuario, .delete-button-usuario {
+    width: 120px;   /* Ancho fijo de los botones */
+    height: 45px;   /* Altura fija */
+    font-size: 16px; /* Tamaño de fuente */
+    border-radius: 5px; 
+    border: 1px solid #ccc; /* Borde gris claro */
+    cursor: pointer;
+    transition: background-color 0.3s ease;  /* Efecto al pasar el ratón */
+    display: flex;
+    justify-content: center;  /* Centrar el texto horizontalmente */
+    align-items: center;      /* Centrar el texto verticalmente */
+}
+
+.edit-button-usuario {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.edit-button-usuario:hover {
+    background-color: #45a049;
+}
+
+.delete-button-usuario {
+    background-color: #f44336;
+    color: white;
+}
+
+.delete-button-usuario:hover {
+    background-color: #e53935;
+}
+
+/* Responsividad para dispositivos móviles (pantallas más pequeñas) */
+@media screen and (max-width: 768px) {
+    /* Hacer que la tabla se desplace horizontalmente en pantallas pequeñas */
+    .usuarios-table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;  /* Permite desplazamiento horizontal */
+        -webkit-overflow-scrolling: touch; /* Mejora la experiencia táctil */
+    }
+
+    /* Cambiar la visualización de las celdas para pantallas pequeñas */
+    .usuarios-table th, .usuarios-table td {
+        display: block;
+        text-align: right;  /* Alineación a la derecha para celdas en móviles */
+        padding: 10px 0;    /* Menos padding para dispositivos móviles */
+    }
+
+    .usuarios-table th {
+        background-color: #e7c5ff;
+        font-weight: bold;
+        position: absolute;  /* Posición absoluta para el encabezado */
+        top: -9999px;        /* Ocultar encabezado */
+    }
+
+    /* Mostrar las etiquetas de cada celda en dispositivos móviles */
+    .usuarios-table td:before {
+        content: attr(data-label); /* Mostrar el nombre de la columna */
+        font-weight: bold;
+        display: inline-block;
+        width: 120px;
+    }
+
+    /* Ajustes para los botones de la tabla */
+    .buttons-container-usuario {
+        display: block;       /* Cambiar a bloque para que los botones se alineen verticalmente */
+        width: 100%;          /* Asegura que los botones ocupen todo el ancho disponible */
+    }
+
+    .edit-button-usuario,
+    .delete-button-usuario {
+        width: 100%;         /* Ajustar el tamaño de los botones a 100% en móviles */
+        margin: 5px 0;       /* Separar los botones en móviles */
+    }
+}
+
+/* Estilos opcionales para pantallas grandes */
+@media screen and (min-width: 1200px) {
+    .usuarios-table th, .usuarios-table td {
+        font-size: 16px; /* Aumentar tamaño de fuente en pantallas grandes */
+    }
+}
+
+/* Estilos generales para el contenedor del modal */
+.modal-usuario {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Estilos para el contenido del modal */
+.modal-content3 {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 600px; /* Asegura un tamaño máximo para el modal */
+    box-sizing: border-box;
+}
+
+/* Estilos para los botones del modal */
+.modal-buttons-user {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;  /* Espacio entre los botones */
+    align-items: center;
+    width: 100%;  /* Asegura que los botones ocupen todo el ancho disponible */
+    box-sizing: border-box;
+}
+
+/* Botones de guardar y cancelar en el modal */
+.save-button-user-custom, .cancel-button-user-custom {
+    flex: 1;  /* Ambos botones ocupan el mismo espacio */
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-sizing: border-box;
+}
+
+/* Estilo para el botón de guardar */
+.save-button-user-custom {
+    background-color: #4CAF50;
+    color: white;
+    margin-right: 10px;  /* Separación entre botones */
+}
+
+.save-button-user-custom:hover {
+    background-color: #45a049;
+}
+
+/* Estilo para el botón de cancelar */
+.cancel-button-user-custom {
+    background-color: #f44336;
+    color: white;
+}
+
+.cancel-button-user-custom:hover {
+    background-color: #e53935;
+}
+
+/* Responsividad para dispositivos móviles (pantallas más pequeñas) */
+@media screen and (max-width: 768px) {
+    .modal-content3 {
+        padding: 15px;  /* Menos padding en pantallas pequeñas */
+        width: 90%;     /* El modal ocupa el 90% del ancho de la pantalla */
+        max-width: none; /* El modal no tiene un tamaño máximo fijo */
+    }
+
+    .modal-buttons-user {
+        flex-direction: column; /* Apilar los botones verticalmente en móviles */
+        gap: 15px;  /* Aumentar el espacio entre los botones */
+    }
+
+    .save-button-user-custom,
+    .cancel-button-user-custom {
+        width: 100%;  /* Los botones ocupan todo el ancho disponible */
+        margin-right: 0; /* Eliminar el margen entre botones en móviles */
+    }
+}
+
+/* Estilos opcionales para pantallas más grandes */
+@media screen and (min-width: 1200px) {
+    .modal-content3 {
+        width: 600px;  /* Fijar un ancho máximo mayor para pantallas grandes */
+    }
+}

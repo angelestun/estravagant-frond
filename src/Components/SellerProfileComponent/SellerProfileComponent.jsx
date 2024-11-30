@@ -44,7 +44,7 @@ const SellerProfileComponent = () => {
       return;
     }
     try {
-      const response = await axios.get(`https://extravagant-back-tidu.vercel.app/tienda/${userData}`);
+      const response = await axios.get(`https://extravagant-back.vercel.app/tienda/${userData}`);
       setTiendas(response.data);
       if (response.data.length > 0) {
         const msg = message.warning('Ya tienes una tienda creada, no puedes agregar más', 4000);
@@ -103,11 +103,11 @@ const SellerProfileComponent = () => {
 
     try {
       if (isEditing) {
-        await axios.put(`https://extravagant-back-tidu.vercel.app/tienda/${currentTiendaId}`, formDataToSend);
+        await axios.put(`https://extravagant-back.vercel.app/tienda/${currentTiendaId}`, formDataToSend);
         setMessage("Tienda actualizada con éxito.");
       } else {
         if (tiendas.length === 0) {
-          await axios.post('https://extravagant-back-tidu.vercel.app/createtienda', formDataToSend);
+          await axios.post('https://extravagant-back.vercel.app/createtienda', formDataToSend);
           message.success("Se le ha enviado al administrador para su aprobación.", 4000);
         } else {
           cleanFormData();
@@ -148,7 +148,7 @@ const SellerProfileComponent = () => {
     const confirmed = window.confirm("¿Estás seguro de que deseas eliminar esta tienda?");
     if (confirmed) {
       try {
-        await axios.delete(`https://extravagant-back-tidu.vercel.app/tienda/${id}`);
+        await axios.delete(`https://extravagant-back.vercel.app/tienda/${id}`);
         fetchTiendas();
         setMessage("Tienda eliminada con éxito.");
       } catch (error) {
@@ -287,7 +287,7 @@ const SellerProfileComponent = () => {
               )}
               {tienda.logo && (
                 <img
-                  src={`https://extravagant-back-tidu.vercel.app/uploads/${tienda.logo}`}
+                  src={`https://extravagant-back.vercel.app/uploads/${tienda.logo}`}
                   alt={`Logo de ${tienda.NombreTienda}`}
                   className="tienda-logo"
                 />

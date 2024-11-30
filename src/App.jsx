@@ -142,7 +142,7 @@ useEffect(() => {
 
   const fetchProductsWithoutOffers = async () => {
     try {
-      const response = await axios.get(`https://extravagant-back-tidu.vercel.app/carrito-sin-oferta/${userId}`);
+      const response = await axios.get(`https://extravagant-back.vercel.app/carrito-sin-oferta/${userId}`);
       const fetchedProducts = response.data || [];
       setProductsWithoutOffers(fetchedProducts); 
       localStorage.setItem('productsWithoutOffers', JSON.stringify(fetchedProducts)); 
@@ -228,12 +228,11 @@ useEffect(() => {
         
         <Route path="/login" element={<LoginComponent />} />
         <Route path="/registro" element={<RegistroComponent />} />
-        <Route path="/Landing" element={<LandingPage />} />
+          <Route path="/" element={< LandingPage/>} />
 
         <Route element={<DashboardLayout cartCount={cartCount} />}>
         
           <Route path="/perfil" element={<PerfilComponent />} />
-          <Route path="/" element={< LandingPage/>} />
           <Route path="/home" element={<HomeComponent />} />
           <Route path="/pedidos" element={<PedidosComponent />} />
           <Route path="/productos" element={<ProductosComponent />} />

@@ -43,9 +43,9 @@ const PerfilComponent = () => {
       }
 
       try {
-        const userResponse = await fetch(`https://extravagant-back-tidu.vercel.app/usuarios/${userId}`);
+        const userResponse = await fetch(`https://extravagant-back.vercel.app/usuarios/${userId}`);
         const userData = await userResponse.json();
-        const pedidosResponse = await fetch(`https://extravagant-back-tidu.vercel.app/pedidos`);
+        const pedidosResponse = await fetch(`https://extravagant-back.vercel.app/pedidos`);
         const pedidosData = await pedidosResponse.json();
 
         const userPedidos = pedidosData
@@ -84,11 +84,11 @@ const PerfilComponent = () => {
       }
 
       try {
-        const userResponse = await fetch(`https://extravagant-back-tidu.vercel.app/usuarios/${userId}`);
+        const userResponse = await fetch(`https://extravagant-back.vercel.app/usuarios/${userId}`);
         const userData = await userResponse.json();
         setUser(userData);
 
-        const pedidosResponse = await fetch(`https://extravagant-back-tidu.vercel.app/pedidos`);
+        const pedidosResponse = await fetch(`https://extravagant-back.vercel.app/pedidos`);
         const pedidosData = await pedidosResponse.json();
         console.log(pedidosData);
 
@@ -113,7 +113,7 @@ const PerfilComponent = () => {
       setLoadingDetails(prev => ({ ...prev, [pedidoId]: true }));
   
       try {
-        const response = await fetch(`https://extravagant-back-tidu.vercel.app/pedido_producto/${pedidoId}`);
+        const response = await fetch(`https://extravagant-back.vercel.app/pedido_producto/${pedidoId}`);
         const data = await response.json();
   
         if (data && data.productos && Array.isArray(data.productos)) {

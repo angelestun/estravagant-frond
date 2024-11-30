@@ -26,7 +26,7 @@ const ListaProductos = () => {
       if (pendingItems.length === 0) return;
   
       for (const item of pendingItems) {
-        await fetch('https://extravagant-back-tidu.vercel.app/carrito', {
+        await fetch('https://extravagant-back.vercel.app/carrito', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(item)
@@ -67,7 +67,7 @@ const ListaProductos = () => {
 
         try {
             const response = await fetch(
-                `https://extravagant-back-tidu.vercel.app/producto/tienda?ID_Usuario=${userId}&ID_Tienda=${storeId}`,
+                `https://extravagant-back.vercel.app/producto/tienda?ID_Usuario=${userId}&ID_Tienda=${storeId}`,
                 { headers: { 'Cache-Control': 'no-cache' } }
             );
             if (!response.ok) throw new Error('Error al obtener productos');
@@ -102,7 +102,7 @@ const ListaProductos = () => {
 
   const fetchOffers = async (products) => {
     try {
-        const response = await fetch(`https://extravagant-back-tidu.vercel.app/oferta/tienda/${storeId}`);
+        const response = await fetch(`https://extravagant-back.vercel.app/oferta/tienda/${storeId}`);
         if (!response.ok) throw new Error('Error al obtener ofertas');
 
         const offersData = await response.json();
@@ -184,7 +184,7 @@ const ListaProductos = () => {
     }
   
     try {
-      const response = await fetch('https://extravagant-back-tidu.vercel.app/carrito', {
+      const response = await fetch('https://extravagant-back.vercel.app/carrito', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(cartItem),
@@ -251,7 +251,7 @@ const ListaProductos = () => {
               onMouseEnter={() => setHoveredProductId(offer.ID_Producto)}
               onMouseLeave={() => setHoveredProductId(null)}>
               <img 
-                src={`https://extravagant-back-tidu.vercel.app/uploads/products/${offer.Imagen}`} 
+                src={`https://extravagant-back.vercel.app/uploads/products/${offer.Imagen}`} 
                 alt={offer.Nombre_Producto} 
                 className="imagen-producto" 
               />
@@ -299,7 +299,7 @@ const ListaProductos = () => {
             <div key={product.ID_Producto} className={`tarjeta-producto ${isFeatured ? 'destacada' : ''}`}
               onMouseEnter={() => setHoveredProductId(product.ID_Producto)}
               onMouseLeave={() => setHoveredProductId(null)}>
-              <img src={`https://extravagant-back-tidu.vercel.app/uploads/products/${product.Imagen}`} alt={product.Nombre_Producto} className="imagen-producto" />
+              <img src={`https://extravagant-back.vercel.app/uploads/products/${product.Imagen}`} alt={product.Nombre_Producto} className="imagen-producto" />
               <div className="detalles-producto">
                 <h3 className="nombre-producto">{product.Nombre_Producto}</h3>
                 {product.Oferta ? (

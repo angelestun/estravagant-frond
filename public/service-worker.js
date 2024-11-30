@@ -139,66 +139,34 @@ self.addEventListener('fetch', (event) => {
 });
 
 self.addEventListener('push', function(event) {
+    console.log('Push recibido:', event.data?.text());
+    
     try {
         const notificationData = event.data ? event.data.json() : {};
-        console.log('Notificación recibida en el Service Worker:', notificationData);
-
+        
         if (!notificationData.notification) {
-            throw new Error('Datos de notificación inválidos');
+            console.error('Datos de notificación inválidos');
+            return;
         }
 
-        // Enviar al NotificationBell
-        self.clients.matchAll({
-            type: 'window',
-            includeUncontrolled: true
-        }).then(clients => {
-            clients.forEach(client => {
-                client.postMessage({
-                    type: 'NOTIFICATION',
-                    title: notificationData.notification.title || 'Extravagant Style',
-                    message: notificationData.notification.body || 'Sin contenido',
-                    timestamp: Date.now(),
-                    url: notificationData.notification.data?.url || '/'
-                });
-            });
-        });
-
         const options = {
-            body: notificationData.notification.body || 'Sin contenido',
+            body: notificationData.notification.body,
             icon: '/icon-192x192.png',
             badge: '/icon-192x192.png',
-            image: notificationData.notification.image || null,
-            vibrate: [100, 50, 100],
             data: {
-                url: notificationData.notification.data?.url || '/',
-                timestamp: Date.now()
+                url: notificationData.notification.data?.url || '/'
             },
-            actions: [
-                {
-                    action: 'open',
-                    title: 'Ver más'
-                },
-                {
-                    action: 'close',
-                    title: 'Cerrar'
-                }
-            ],
-            dir: 'auto',
-            lang: 'es',
-            renotify: true,
-            requireInteraction: true,
-            tag: notificationData.notification.tag || 'default',
-            silent: false
+            requireInteraction: true
         };
 
         event.waitUntil(
             self.registration.showNotification(
-                notificationData.notification.title || 'Extravagant Style',
+                notificationData.notification.title,
                 options
             )
         );
     } catch (error) {
-        console.error('Error al procesar notificación push:', error);
+        console.error('Error procesando push:', error);
     }
 });
 

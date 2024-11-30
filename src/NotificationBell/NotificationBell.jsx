@@ -7,7 +7,6 @@ export default function NotificationBell() {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
 
-  // Cargar notificaciones del localStorage al iniciar
   useEffect(() => {
     const savedNotifications = localStorage.getItem('notifications');
     if (savedNotifications) {
@@ -15,7 +14,6 @@ export default function NotificationBell() {
     }
   }, []);
 
-  // Guardar notificaciones en localStorage cuando cambien
   useEffect(() => {
     localStorage.setItem('notifications', JSON.stringify(notifications));
     setUnreadCount(notifications.filter((n) => !n.read).length);
@@ -44,7 +42,7 @@ export default function NotificationBell() {
                 Date.now() - new Date(n.timestamp).getTime() < 5000
             );
             if (isDuplicate) return prev;
-            return [newNotification, ...prev].slice(0, 50); // Aumentamos el límite a 50
+            return [newNotification, ...prev].slice(0, 50); 
           });
         }
       });

@@ -26,7 +26,7 @@ const ApproveCouponsComponent = () => {
         }
 
         try {
-            const response = await axios.get('http://localhost:3000/tienda');
+            const response = await axios.get('https://extravagant-back.vercel.app//tienda');
             setTiendas(response.data);
             localStorage.setItem('cachedTiendas', JSON.stringify(response.data));
         } catch (error) {
@@ -59,7 +59,7 @@ const ApproveCouponsComponent = () => {
         }
 
         try {
-            const response = await axios.get('http://localhost:3000/cupones/pendientes');
+            const response = await axios.get('https://extravagant-back.vercel.app//cupones/pendientes');
             setCuponesPendientes(response.data);
             localStorage.setItem('cachedCuponesPendientes', JSON.stringify(response.data));
         } catch (error) {
@@ -85,7 +85,7 @@ const ApproveCouponsComponent = () => {
         }
 
         try {
-            await axios.put(`http://localhost:3000/cupones/aprobar/${id}`);
+            await axios.put(`https://extravagant-back.vercel.app//cupones/aprobar/${id}`);
             setMessage("Cupón aprobado con éxito.");
             fetchCuponesPendientes();
         } catch (error) {
@@ -111,7 +111,7 @@ const ApproveCouponsComponent = () => {
         }
 
         try {
-            await axios.put(`http://localhost:3000/cupones/rechazar/${id}`, { Motivo_Rechazo: motivo });
+            await axios.put(`https://extravagant-back.vercel.app//cupones/rechazar/${id}`, { Motivo_Rechazo: motivo });
             setMessage("Cupón rechazado con éxito.");
             fetchCuponesPendientes();
         } catch (error) {

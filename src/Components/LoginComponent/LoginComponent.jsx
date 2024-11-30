@@ -30,7 +30,7 @@ export default function LoginComponent() {
     const objetoParaBackend = { Correo, Contraseña };
 
     try {
-      const response = await fetch("https://extravagant-back-tidu.vercel.app/login", {
+      const response = await fetch("https://extravagant-back.vercel.app/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(objetoParaBackend)
@@ -46,7 +46,7 @@ export default function LoginComponent() {
 
         switch (data.usuario.Rol) {
           case "admin":
-            navigate("/");
+            navigate("/home");
             break;
           case "vendedor":
             navigate("/seller");

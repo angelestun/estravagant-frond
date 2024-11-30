@@ -229,6 +229,7 @@ useEffect(() => {
         <Route path="/login" element={<LoginComponent />} />
         <Route path="/registro" element={<RegistroComponent />} />
           <Route path="/" element={< LandingPage/>} />
+          <Route path="/quienes-somos" element={<QuienesSomos />} />
 
         <Route element={<DashboardLayout cartCount={cartCount} />}>
         
@@ -250,7 +251,6 @@ useEffect(() => {
           </Suspense>
         } />
           <Route path="/notifications" component={NotificationBell} />
-          <Route path="/quienes-somos" element={<QuienesSomos />} />
           <Route path="/paypal" element={<PayPalButtonComponent />} />
           <Route path="/test-notifications" element={<NotificationTester />} />
           <Route path="/seller" element={<SellerProfileComponent />} />
@@ -453,7 +453,7 @@ function UsuarioLayout({ cartCount }) {
 
           <Navbar.Collapse id="navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link as={Link} to="/" className={`nav-item-${navbarColor}`}>
+              <Nav.Link as={Link} to="/home" className={`nav-item-${navbarColor}`}>
                 <FontAwesomeIcon icon={faHome} /> Inicio
               </Nav.Link>
               <Nav.Link as={Link} to="/cupon" className={`nav-item-${navbarColor}`}>

@@ -56,7 +56,7 @@ const SellerProfileComponent = () => {
       return;
     }
     try {
-      const response = await axios.get(`https://extravagant-back.vercel.app/tienda/${userData}`);
+      const response = await axios.get(`https://extravagant-back.vercel.app/tiendas/${userData}`);
       setTiendas(response.data);
       if (response.data.length > 0) {
         const msg = message.warning('Ya tienes una tienda creada, no puedes agregar más', 4000);
@@ -88,6 +88,7 @@ const SellerProfileComponent = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     console.log('Iniciando submit con formData:', formData); // Nuevo log
     
     if (!isOnline) {
@@ -117,30 +118,30 @@ const SellerProfileComponent = () => {
     }
 
     try {
+      const config = {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        withCredentials: true
+      };
+    
       if (isEditing) {
-        await axios.post(`https://extravagant-back.vercel.app/tienda/${currentTiendaId}`, formDataToSend);
+        await axios.post(`https://extravagant-back.vercel.app/tienda/${currentTiendaId}`, formDataToSend, config);
         setMessage("Tienda actualizada con éxito.");
+      } else if (tiendas.length === 0) {
+        await axios.post('https://extravagant-back.vercel.app/createtienda', formDataToSend, config);
+        message.success("Se le ha enviado al administrador para su aprobación.", 4000);
       } else {
-        if (tiendas.length === 0) {
-          await axios.post('https://extravagant-back.vercel.app/createtienda', formDataToSend);
-          message.success("Se le ha enviado al administrador para su aprobación.", 4000);
-        } else {
-          cleanFormData();
-          message.warning('No puede agregar más tiendas', 4000).then(({ destroy }) => {
-            setTimeout(() => {
-              destroy();
-            }, 2000);
-          });
-        }
+        cleanFormData();
+        message.warning('No puede agregar más tiendas', 4000);
       }
+      
       fetchTiendas();
       cleanFormData();
     } catch (error) {
-      alert("Ocurrió un error al enviar la tienda");
-      console.error(error);
+      console.error("Error detallado:", error.response || error);
+      alert(error.response?.data?.error || "Error al crear/actualizar la tienda");
     }
   };
-
+  
   const cleanFormData = () => {
     setFormData({
       NombreTienda: '',

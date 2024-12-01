@@ -72,7 +72,7 @@ const ApproveStoresComponent = () => {
     }
 
     try {
-      await axios.put(`https://extravagant-back.vercel.app//tienda/aprobar/${id}`);
+      await axios.put(`https://extravagant-back.vercel.app/tienda/aprobar/${id}`);
       setMessage("Tienda aprobada con éxito.");
       fetchTiendasPendientes();
     } catch (error) {
@@ -93,7 +93,7 @@ const ApproveStoresComponent = () => {
     }
 
     try {
-      await axios.put(`https://extravagant-back.vercel.app//tienda/rechazar/${id}`);
+      await axios.put(`https://extravagant-back.vercel.app/tienda/rechazar/${id}`);
       setMessage("Tienda rechazada con éxito.");
       fetchTiendasPendientes();
     } catch (error) {

@@ -12,7 +12,7 @@ const SellerProfileComponent = () => {
     Descripcion: '',
     Logo: null,
     acceptedTerms: false,
-    userId: 0
+    userId: userData ? parseInt(userData) : null
   });
   const userData = localStorage.getItem('userId');
 
@@ -141,7 +141,7 @@ const SellerProfileComponent = () => {
       alert(error.response?.data?.error || "Error al crear/actualizar la tienda");
     }
   };
-  
+
   const cleanFormData = () => {
     setFormData({
       NombreTienda: '',

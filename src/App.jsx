@@ -56,6 +56,25 @@ function App() {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [cartItems, setCartItems] = useState([]);
 
+
+
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem('userId');
+    const userRole = localStorage.getItem('userRole');
+    const userEmail = localStorage.getItem('userEmail');
+    const currentPath = window.location.pathname;
+
+    if (isLoggedIn && currentPath === '/') {
+      if (userRole === 'vendedor') {
+        window.location.href = '/seller';
+      } else if (userEmail === 'adm@gmail.com') {
+        window.location.href = '/dashboard-admin';
+      } else {
+        window.location.href = '/home';
+      }
+    }
+  }, []);
+
   useEffect(() => {
     try {
         const savedCartString = localStorage.getItem('cart');

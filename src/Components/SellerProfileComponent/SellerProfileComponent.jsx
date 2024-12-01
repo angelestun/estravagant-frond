@@ -15,6 +15,8 @@ const SellerProfileComponent = () => {
     userId: 0
   });
   const userData = localStorage.getItem('userId');
+  console.log('ID de usuario recuperado:', userData); 
+
   const [tiendas, setTiendas] = useState([]);
   const [imageScale, setImageScale] = useState(1);
   const editorRef = useRef(null);
@@ -26,10 +28,21 @@ const SellerProfileComponent = () => {
 
 
   useEffect(() => {
+    console.log('userData en useEffect:', userData); 
+    if (!userData) {
+      console.warn('No se encontró ID de usuario en localStorage');
+      return;
+    }
+    fetchTiendas();
+  }, [userData]);
+  
+  useEffect(() => {
     fetchTiendas();
   }, [userData]);
 
   const fetchTiendas = async () => {
+    console.log('Intentando obtener tiendas para el usuario:', userData); 
+
     if (!isOnline) {
       const cachedTiendas = localStorage.getItem('cachedTiendas');
       if (cachedTiendas) {

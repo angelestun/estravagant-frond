@@ -88,6 +88,7 @@ const SellerProfileComponent = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Iniciando submit con formData:', formData); // Nuevo log
     
     if (!isOnline) {
       showNotification(
@@ -105,6 +106,8 @@ const SellerProfileComponent = () => {
     const formDataToSend = new FormData();
     formDataToSend.append('NombreTienda', formData.NombreTienda);
     formDataToSend.append('Descripcion', formData.Descripcion);
+    formDataToSend.append('userId', userData);
+
 
     if (formData.Logo) {
       formDataToSend.append('logo', formData.Logo, formData.Logo.name);
@@ -115,7 +118,7 @@ const SellerProfileComponent = () => {
 
     try {
       if (isEditing) {
-        await axios.put(`https://extravagant-back.vercel.app/tienda/${currentTiendaId}`, formDataToSend);
+        await axios.post(`https://extravagant-back.vercel.app/tienda/${currentTiendaId}`, formDataToSend);
         setMessage("Tienda actualizada con éxito.");
       } else {
         if (tiendas.length === 0) {

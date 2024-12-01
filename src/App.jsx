@@ -353,6 +353,18 @@ function AdminLayout() {
                 Usuarios
               </Nav.Link>
             </Nav>
+            <div className="mobile-profile">
+                <NavDropdown
+                  title={<><FontAwesomeIcon icon={faUser} /> Perfil</>}
+                  id="nav-dropdown"
+                  className={`dropdown-${navbarColor}`}
+                >
+                  <NavDropdown.Item as={Link} to="/perfil">Perfil</NavDropdown.Item>
+                  <NavDropdown.Item as={Link} to="/login">
+                    <FontAwesomeIcon icon={faSignOutAlt} /> Cerrar Sesión
+                  </NavDropdown.Item>
+                </NavDropdown>
+              </div>
 
             <div className="desktop-profile">
               <NavDropdown
@@ -433,6 +445,19 @@ function VendedorLayout() {
                 </NavDropdown.Item>
               </NavDropdown>
             </Nav>
+
+            <div className="mobile-profile">
+                <NavDropdown
+                  title={<><FontAwesomeIcon icon={faUser} /> Perfil</>}
+                  id="nav-dropdown"
+                  className={`dropdown-${navbarColor}`}
+                >
+                  <NavDropdown.Item as={Link} to="/perfil">Perfil</NavDropdown.Item>
+                  <NavDropdown.Item as={Link} to="/login">
+                    <FontAwesomeIcon icon={faSignOutAlt} /> Cerrar Sesión
+                  </NavDropdown.Item>
+                </NavDropdown>
+              </div>
 
             <div className="desktop-profile">
               <NavDropdown

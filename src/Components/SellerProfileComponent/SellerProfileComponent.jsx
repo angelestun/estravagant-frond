@@ -15,7 +15,6 @@ const SellerProfileComponent = () => {
     userId: 0
   });
   const userData = localStorage.getItem('userId');
-  console.log('ID de usuario recuperado:', userData); 
 
   const [tiendas, setTiendas] = useState([]);
   const [imageScale, setImageScale] = useState(1);

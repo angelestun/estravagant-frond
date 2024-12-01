@@ -72,47 +72,77 @@ self.addEventListener('offline', () => {
     }
 });
 
+// En el fetch event handler
+
+self.addEventListener('navigationpreload', (event) => {
+    event.respondWith(
+      fetch(event.request).catch(() => {
+        return caches.match('/index.html');
+      })
+    );
+  });
+  
+
 self.addEventListener('fetch', (event) => {
-    if (event.request.method !== 'GET') {
+    if (event.request.method === 'HEAD' && event.request.url.includes('extravagant-style.vercel.app')) {
+        event.respondWith(
+            new Response(null, {
+                status: 200,
+                statusText: 'OK'
+            })
+        );
         return;
     }
-
+    
     const currentOnlineStatus = navigator.onLine;
     if (currentOnlineStatus !== lastOnlineStatus) {
         lastOnlineStatus = currentOnlineStatus;
         broadcastConnectivityStatus(currentOnlineStatus);
     }
 
-    if (event.request.mode === 'navigate') {
+    // Manejar las peticiones de API de manera diferente
+    if (event.request.url.includes('extravagant-back.vercel.app')) {
         event.respondWith(
             fetch(event.request)
-                .then((response) => {
-                    return response;
-                })
-                .catch(() => {
-                    if (!navigator.onLine) {
-                        return caches.match(OFFLINE_URL); 
-                    }
-                    return new Response('Network Error', {
+                .then(response => response)
+                .catch(error => {
+                    console.error('Error en petición API:', error);
+                    return new Response(JSON.stringify({ error: 'Error de red' }), {
                         status: 503,
-                        statusText: 'Network Error',
+                        headers: { 'Content-Type': 'application/json' }
                     });
                 })
         );
         return;
     }
 
+    // Para navegación SPA
+    if (event.request.mode === 'navigate') {
+        event.respondWith(
+            fetch(event.request)
+                .catch(() => {
+                    if (!navigator.onLine) {
+                        return caches.match(OFFLINE_URL);
+                    }
+                    // Si la ruta no existe, redirigir al index.html
+                    return caches.match('/index.html');
+                })
+        );
+        return;
+    }
+
+    // Para otros recursos
     event.respondWith(
         caches.match(event.request)
             .then((cachedResponse) => {
                 if (cachedResponse) {
-                    return cachedResponse;  
+                    return cachedResponse;
                 }
 
-                return fetch(event.request) 
+                return fetch(event.request)
                     .then((response) => {
                         if (!response || response.status !== 200 || response.type !== 'basic') {
-                            return response; 
+                            return response;
                         }
 
                         const responseToCache = response.clone();
@@ -126,10 +156,9 @@ self.addEventListener('fetch', (event) => {
                         if (event.request.destination === 'image' ||
                             event.request.destination === 'font' ||
                             event.request.destination === 'style') {
-                            return caches.match(event.request); 
+                            return caches.match(event.request);
                         }
-
-                        return new Response('Network error, please check your connection.', {
+                        return new Response('Error de red, por favor verifica tu conexión.', {
                             status: 503,
                             statusText: 'Service Unavailable',
                         });

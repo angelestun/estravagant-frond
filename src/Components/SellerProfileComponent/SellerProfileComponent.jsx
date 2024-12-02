@@ -6,12 +6,17 @@ import { message } from 'react-message-popup';
 import { useConnectivity } from '../../context/ConnectivityProvider';
 
 
-const SellerProfileComponent = () => {
+const initialFormState = {
+  NombreTienda: '',
+  Descripcion: '',
+  Logo: null,
+  acceptedTerms: false,
+  userId: null
+};
 
+const SellerProfileComponent = () => {
   const { isOnline, showNotification } = useConnectivity();
   const editorRef = useRef(null);
-
-  const userData = localStorage.getItem('userId');
 
   const [tiendas, setTiendas] = useState([]);
   const [imageScale, setImageScale] = useState(1);
@@ -19,63 +24,16 @@ const SellerProfileComponent = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [currentTiendaId, setCurrentTiendaId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const [formData, setFormData] = useState({
-    NombreTienda: '',
-    Descripcion: '',
-    Logo: null,
-    acceptedTerms: false,
-    userId: userData ? parseInt(userData) : null
+  const [formData, setFormData] = useState(() => {
+    const userId = localStorage.getItem('userId');
+    return {
+      ...initialFormState,
+      userId: userId ? parseInt(userId) : null
+    };
   });
 
-  useEffect(() => {
-    console.log('userData en useEffect:', userData); 
-    if (!userData) {
-      console.warn('No se encontró ID de usuario en localStorage');
-      return;
-    }
-    fetchTiendas();
-  }, [userData]);
-  
-  useEffect(() => {
-    fetchTiendas();
-  }, [userData]);
 
   const fetchTiendas = async () => {
-    console.log('Intentando obtener tiendas para el usuario:', userData); 
-
-    if (!isOnline) {
-      const cachedTiendas = localStorage.getItem('cachedTiendas');
-      if (cachedTiendas) {
-        setTiendas(JSON.parse(cachedTiendas));
-        return;
-      }
-      showNotification(
-        'Sin Conexión',
-        'No hay tiendas guardadas para mostrar offline',
-        'warning'
-      );
-      return;
-    }
-    try {
-      const response = await axios.get(`https://extravagant-back.vercel.app/tiendas/${userData}`);
-      setTiendas(response.data);
-      if (response.data.length > 0) {
-        const msg = message.warning('Ya tienes una tienda creada, no puedes agregar más', 4000);
-        if (msg && typeof msg.destroy === 'function') {
-          setTimeout(() => {
-            msg.destroy();
-          }, 2000);
-        }
-      }
-    } catch (error) {
-      console.error("Error al obtener las tiendas:", userData, error);
-    }
-  };
-  
-  useEffect(() => {
-    fetchTiendas();
-  }, [userData, isOnline]);
 
   const handleChange = (e) => {
     const { name, value, files, checked } = e.target;
@@ -143,6 +101,7 @@ const SellerProfileComponent = () => {
       alert(error.response?.data?.error || "Error al crear/actualizar la tienda");
     }
   };
+
 
   const cleanFormData = () => {
     setFormData({

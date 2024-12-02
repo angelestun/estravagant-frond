@@ -7,6 +7,19 @@ import { useConnectivity } from '../../context/ConnectivityProvider';
 
 
 const SellerProfileComponent = () => {
+
+  const { isOnline, showNotification } = useConnectivity();
+  const editorRef = useRef(null);
+
+  const userData = localStorage.getItem('userId');
+
+  const [tiendas, setTiendas] = useState([]);
+  const [imageScale, setImageScale] = useState(1);
+  const [Message, setMessage] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentTiendaId, setCurrentTiendaId] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [formData, setFormData] = useState({
     NombreTienda: '',
     Descripcion: '',
@@ -14,17 +27,6 @@ const SellerProfileComponent = () => {
     acceptedTerms: false,
     userId: userData ? parseInt(userData) : null
   });
-  const userData = localStorage.getItem('userId');
-
-  const [tiendas, setTiendas] = useState([]);
-  const [imageScale, setImageScale] = useState(1);
-  const editorRef = useRef(null);
-  const [Message, setMessage] = useState('');
-  const [isEditing, setIsEditing] = useState(false);
-  const [currentTiendaId, setCurrentTiendaId] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const { isOnline, showNotification } = useConnectivity();
-
 
   useEffect(() => {
     console.log('userData en useEffect:', userData); 

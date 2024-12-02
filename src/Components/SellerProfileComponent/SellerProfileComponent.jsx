@@ -17,6 +17,8 @@ const initialFormState = {
 const SellerProfileComponent = () => {
   const { isOnline, showNotification } = useConnectivity();
   const editorRef = useRef(null);
+  const userId = localStorage.getItem('userId');
+
 
   const [tiendas, setTiendas] = useState([]);
   const [imageScale, setImageScale] = useState(1);
@@ -34,6 +36,22 @@ const SellerProfileComponent = () => {
 
 
   const fetchTiendas = async () => {
+    if (!userId || !isOnline) return;
+
+    try {
+      const response = await axios.get(`https://extravagant-back.vercel.app/tienda/${userId}`);
+      setTiendas(response.data);
+      if (response.data.length > 0) {
+        message.warning('Ya tienes una tienda creada, no puedes agregar más', 4000);
+      }
+    } catch (error) {
+      console.error("Error al obtener las tiendas:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTiendas();
+  }, [userId, isOnline]);
 
   const handleChange = (e) => {
     const { name, value, files, checked } = e.target;
@@ -46,11 +64,14 @@ const SellerProfileComponent = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
+ const handleSubmit = async (e) => {
     e.preventDefault();
     
-    console.log('Iniciando submit con formData:', formData); // Nuevo log
-    
+    if (!userId) {
+      message.error("Error: Usuario no identificado");
+      return;
+    }
+
     if (!isOnline) {
       showNotification(
         'Conexión Requerida',
@@ -59,6 +80,7 @@ const SellerProfileComponent = () => {
       );
       return;
     }
+
     if (!formData.NombreTienda || (!isEditing && !formData.acceptedTerms)) {
       alert("Por favor, completa todos los campos requeridos y acepta los términos.");
       return;
@@ -67,14 +89,10 @@ const SellerProfileComponent = () => {
     const formDataToSend = new FormData();
     formDataToSend.append('NombreTienda', formData.NombreTienda);
     formDataToSend.append('Descripcion', formData.Descripcion);
-    formDataToSend.append('userId', userData);
-
+    formDataToSend.append('userId', userId);
 
     if (formData.Logo) {
       formDataToSend.append('logo', formData.Logo, formData.Logo.name);
-    }
-    if (!isEditing) {
-      formDataToSend.append('userId', userData);
     }
 
     try {
@@ -87,21 +105,20 @@ const SellerProfileComponent = () => {
         await axios.post(`https://extravagant-back.vercel.app/tienda/${currentTiendaId}`, formDataToSend, config);
         setMessage("Tienda actualizada con éxito.");
       } else if (tiendas.length === 0) {
-        await axios.post('https://extravagant-back.vercel.app/createtienda', formDataToSend, config);
+        const response = await axios.post('https://extravagant-back.vercel.app/createtienda', formDataToSend, config);
+        console.log('Respuesta del servidor:', response.data);
         message.success("Se le ha enviado al administrador para su aprobación.", 4000);
       } else {
-        cleanFormData();
         message.warning('No puede agregar más tiendas', 4000);
       }
       
       fetchTiendas();
       cleanFormData();
     } catch (error) {
-      console.error("Error detallado:", error.response || error);
+      console.error("Error al crear/actualizar tienda:", error.response || error);
       alert(error.response?.data?.error || "Error al crear/actualizar la tienda");
     }
   };
-
 
   const cleanFormData = () => {
     setFormData({

@@ -6,43 +6,33 @@ import { message } from 'react-message-popup';
 import { useConnectivity } from '../../context/ConnectivityProvider';
 
 
-const initialFormState = {
-  NombreTienda: '',
-  Descripcion: '',
-  Logo: null,
-  acceptedTerms: false,
-  userId: null
-};
-
 const SellerProfileComponent = () => {
   const { isOnline, showNotification } = useConnectivity();
   const editorRef = useRef(null);
   const userId = localStorage.getItem('userId');
 
-
+  const [formData, setFormData] = useState({
+    NombreTienda: '',
+    Descripcion: '',
+    Logo: null,
+    acceptedTerms: false
+  });
   const [tiendas, setTiendas] = useState([]);
   const [imageScale, setImageScale] = useState(1);
   const [Message, setMessage] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [currentTiendaId, setCurrentTiendaId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState(() => {
-    const userId = localStorage.getItem('userId');
-    return {
-      ...initialFormState,
-      userId: userId ? parseInt(userId) : null
-    };
-  });
-
 
   const fetchTiendas = async () => {
     if (!userId || !isOnline) return;
 
     try {
-      const response = await axios.get(`https://extravagant-back.vercel.app/tienda/${userId}`);
-      setTiendas(response.data);
-      if (response.data.length > 0) {
-        message.warning('Ya tienes una tienda creada, no puedes agregar más', 4000);
+      const response = await axios.get(`https://extravagant-back.vercel.app/tienda`, {
+        params: { ID_Usuario: userId }
+      });
+      if (response.data) {
+        setTiendas(Array.isArray(response.data) ? response.data : [response.data]);
       }
     } catch (error) {
       console.error("Error al obtener las tiendas:", error);
@@ -51,20 +41,9 @@ const SellerProfileComponent = () => {
 
   useEffect(() => {
     fetchTiendas();
-  }, [userId, isOnline]);
+  }, [userId]);
 
-  const handleChange = (e) => {
-    const { name, value, files, checked } = e.target;
-    if (name === 'Logo') {
-      setFormData({ ...formData, Logo: files[0] });
-    } else if (name === 'acceptedTerms') {
-      setFormData({ ...formData, acceptedTerms: checked });
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
-  };
-
- const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!userId) {
@@ -72,17 +51,8 @@ const SellerProfileComponent = () => {
       return;
     }
 
-    if (!isOnline) {
-      showNotification(
-        'Conexión Requerida',
-        'Se necesita conexión a Internet para registrar o actualizar una tienda',
-        'warning'
-      );
-      return;
-    }
-
     if (!formData.NombreTienda || (!isEditing && !formData.acceptedTerms)) {
-      alert("Por favor, completa todos los campos requeridos y acepta los términos.");
+      message.error("Por favor, complete todos los campos y acepte los términos");
       return;
     }
 
@@ -100,26 +70,47 @@ const SellerProfileComponent = () => {
         headers: { 'Content-Type': 'multipart/form-data' },
         withCredentials: true
       };
-    
+
+      let response;
       if (isEditing) {
-        await axios.post(`https://extravagant-back.vercel.app/tienda/${currentTiendaId}`, formDataToSend, config);
-        setMessage("Tienda actualizada con éxito.");
-      } else if (tiendas.length === 0) {
-        const response = await axios.post('https://extravagant-back.vercel.app/createtienda', formDataToSend, config);
-        console.log('Respuesta del servidor:', response.data);
-        message.success("Se le ha enviado al administrador para su aprobación.", 4000);
+        response = await axios.post(
+          `https://extravagant-back.vercel.app/tienda/${currentTiendaId}`, 
+          formDataToSend, 
+          config
+        );
       } else {
-        message.warning('No puede agregar más tiendas', 4000);
+        response = await axios.post(
+          'https://extravagant-back.vercel.app/createtienda', 
+          formDataToSend,
+          config
+        );
       }
+
+      console.log('Response:', response.data);
+      message.success(
+        isEditing 
+          ? "Tienda actualizada con éxito" 
+          : "Tienda creada, pendiente de aprobación"
+      );
       
-      fetchTiendas();
+      await fetchTiendas();
       cleanFormData();
     } catch (error) {
-      console.error("Error al crear/actualizar tienda:", error.response || error);
-      alert(error.response?.data?.error || "Error al crear/actualizar la tienda");
+      console.error("Error completo:", error);
+      message.error(error.response?.data?.error || "Error al procesar la tienda");
     }
   };
-
+  const handleChange = (e) => {
+    const { name, value, files, checked } = e.target;
+    const newValue = name === 'Logo' ? files[0] 
+                   : name === 'acceptedTerms' ? checked 
+                   : value;
+                   
+    setFormData(prev => ({
+      ...prev,
+      [name]: newValue
+    }));
+  };
   const cleanFormData = () => {
     setFormData({
       NombreTienda: '',
@@ -127,7 +118,10 @@ const SellerProfileComponent = () => {
       Logo: null,
       acceptedTerms: false
     });
+    setIsEditing(false);
+    setCurrentTiendaId(null);
   };
+
 
   const handleEliminar = async (id) => {
     if (!isOnline) {

@@ -4,6 +4,7 @@ import axios from 'axios';
 import AvatarEditor from 'react-avatar-editor';
 import { message } from 'react-message-popup';
 import { useConnectivity } from '../../context/ConnectivityProvider';
+import { convertToBase64, convertUrlToBase64 } from '../utils/imageUtils';
 
 
 const SellerProfileComponent = () => {
@@ -32,7 +33,18 @@ const SellerProfileComponent = () => {
         params: { ID_Usuario: userId }
       });
       if (response.data) {
-        setTiendas(Array.isArray(response.data) ? response.data : [response.data]);
+        const tiendas = Array.isArray(response.data) ? response.data : [response.data];
+        const tiendasWithBase64 = await Promise.all(
+          tiendas.map(async (tienda) => {
+            if (tienda.logo) {
+              const imageUrl = `https://extravagant-back.vercel.app/uploads/${tienda.logo}`;
+              const base64Logo = await convertUrlToBase64(imageUrl);
+              return { ...tienda, logoBase64: base64Logo };
+            }
+            return tienda;
+          })
+        );
+        setTiendas(tiendasWithBase64);
       }
     } catch (error) {
       console.error("Error al obtener las tiendas:", error);
@@ -100,16 +112,22 @@ const SellerProfileComponent = () => {
       message.error(error.response?.data?.error || "Error al procesar la tienda");
     }
   };
-  const handleChange = (e) => {
+  const handleChange = async (e) => {
     const { name, value, files, checked } = e.target;
-    const newValue = name === 'Logo' ? files[0] 
-                   : name === 'acceptedTerms' ? checked 
-                   : value;
-                   
-    setFormData(prev => ({
-      ...prev,
-      [name]: newValue
-    }));
+    if (name === 'Logo' && files[0]) {
+      const base64 = await convertToBase64(files[0]);
+      setFormData(prev => ({
+        ...prev,
+        Logo: files[0],
+        logoPreview: base64
+      }));
+    } else {
+      const newValue = name === 'acceptedTerms' ? checked : value;
+      setFormData(prev => ({
+        ...prev,
+        [name]: newValue
+      }));
+    }
   };
   const cleanFormData = () => {
     setFormData({
@@ -209,30 +227,30 @@ const SellerProfileComponent = () => {
           />
         </div>
 
-        {formData.Logo && (
-          <div className="image-editor-container">
-            <div className="image-editor">
-              <AvatarEditor
-                ref={editorRef}
-                image={URL.createObjectURL(formData.Logo)}
-                width={150}
-                height={150}
-                border={50}
-                borderRadius={75}
-                scale={imageScale}
-                rotate={0}
-              />
-              <input
-                type="range"
-                min="1"
-                max="2"
-                step="0.01"
-                value={imageScale}
-                onChange={(e) => setImageScale(parseFloat(e.target.value))}
-              />
-            </div>
+        {formData.logoPreview && (
+        <div className="image-editor-container">
+          <div className="image-editor">
+            <AvatarEditor
+              ref={editorRef}
+              image={formData.logoPreview}
+              width={150}
+              height={150}
+              border={50}
+              borderRadius={75}
+              scale={imageScale}
+              rotate={0}
+            />
+            <input
+              type="range"
+              min="1"
+              max="2"
+              step="0.01"
+              value={imageScale}
+              onChange={(e) => setImageScale(parseFloat(e.target.value))}
+            />
           </div>
-        )}
+        </div>
+      )}
 
         <div className="form-group">
           <label style={{ display: 'flex', alignItems: 'center' }}>
@@ -273,13 +291,13 @@ const SellerProfileComponent = () => {
               {tienda.activo === 3 && (
                 <p><strong>Motivo de Baja:</strong> {tienda.motivo_baja}</p>
               )}
-              {tienda.logo && (
-                <img
-                  src={`https://extravagant-back.vercel.app/uploads/${tienda.logo}`}
-                  alt={`Logo de ${tienda.NombreTienda}`}
-                  className="tienda-logo"
-                />
-              )}
+              {tienda.logoBase64 && (
+                    <img
+                      src={tienda.logoBase64}
+                      alt={`Logo de ${tienda.NombreTienda}`}
+                      className="tienda-logo"
+                    />
+                  )}
                 <div className="tienda-actions">
                   {(tienda.activo === 1 || tienda.activo === 2) && (
                     <>

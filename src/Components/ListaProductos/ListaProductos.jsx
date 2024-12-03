@@ -295,14 +295,11 @@ const ListaProductos = () => {
             <div key={product.ID_Producto} className={`tarjeta-producto ${isFeatured ? 'destacada' : ''}`}
               onMouseEnter={() => setHoveredProductId(product.ID_Producto)}
               onMouseLeave={() => setHoveredProductId(null)}>
-                      <img 
-                        src={product.Imagen?.startsWith('http') ? product.Imagen : '/assets/placeholder.jpg'} 
-                        alt={product.Nombre_Producto} 
-                        className="imagen-producto"
-                        onError={(e) => {
-                          e.target.src = '/assets/placeholder.jpg';
-                        }} 
-                      />
+              <img src={`https://extravagant-back-1.onrender.com/uploads/products/${product.Imagen}`} alt={product.Nombre_Producto} className="imagen-producto" />
+              <div className="detalles-producto">
+                <h3 className="nombre-producto">{product.Nombre_Producto}</h3>
+                {product.Oferta ? (
+                  <>
                     {product.Tipo_Oferta === '2x1' ? (
                       <p className="oferta-dos-por-uno" style={{ color: 'black' }}>
                         {formatPrice(product.Precio)}

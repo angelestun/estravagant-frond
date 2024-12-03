@@ -40,7 +40,7 @@ const CuponesComponent = () => {
         }
       }
 
-      const response = await axios.get('https://extravagant-back.vercel.app/tienda');
+      const response = await axios.get('https://extravagant-back-1.onrender.com/tienda');
       setTiendas(response.data);
       localStorage.setItem('cachedTiendas', JSON.stringify(response.data));
     } catch (error) {
@@ -68,7 +68,7 @@ const CuponesComponent = () => {
         }
       }
 
-      const response = await axios.get(`https://extravagant-back.vercel.app/cupones?userId=${userId}`, {
+      const response = await axios.get(`https://extravagant-back-1.onrender.com/cupones?userId=${userId}`, {
         headers: { 'Cache-Control': 'no-cache' }
       });
       

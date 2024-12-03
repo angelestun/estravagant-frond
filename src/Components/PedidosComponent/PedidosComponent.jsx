@@ -27,7 +27,7 @@ const PedidosComponent = () => {
   const fetchUsuarios = async () => {
     try {
       if (!isOnline) return;
-      const response = await axios.get("https://extravagant-back.vercel.app/usuarios");
+      const response = await axios.get("https://extravagant-back-1.onrender.com/usuarios");
       const usuariosData = response.data;
       const usuariosMap = usuariosData.reduce((acc, user) => {
         acc[user.ID_Usuario] = `${user.Nombre} ${user.Apellido}`;
@@ -60,7 +60,7 @@ const PedidosComponent = () => {
         return;
       }
 
-      const response = await axios.get("https://extravagant-back.vercel.app/pedidos/", {
+      const response = await axios.get("https://extravagant-back-1.onrender.com/pedidos/", {
         headers: { 'Cache-Control': 'no-cache' }
       });
       setPedidos(response.data);
@@ -102,7 +102,7 @@ const PedidosComponent = () => {
     }
 
     try {
-      const response = await axios.get(`https://extravagant-back.vercel.app/pedido_producto/${pedidoId}`);
+      const response = await axios.get(`https://extravagant-back-1.onrender.com/pedido_producto/${pedidoId}`);
       const detalles = response.data.productos;
       setPedidoDetalles(prev => ({
         ...prev,

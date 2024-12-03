@@ -54,7 +54,7 @@ const ProductPreviewModal = ({ product, onClose, handleAddToCart }) => {
         <div className="custom-modal-body">
           <div className="custom-modal-image-container">
             <img 
-              src={`https://extravagant-back.vercel.app/uploads/products/${product.Imagen}`} 
+              src={`https://extravagant-back-1.onrender.com/uploads/products/${product.Imagen}`} 
               alt={product.Nombre_Producto} 
               className="custom-modal-product-image" 
             />

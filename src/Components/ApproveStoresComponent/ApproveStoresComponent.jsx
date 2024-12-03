@@ -39,7 +39,7 @@ const ApproveStoresComponent = () => {
     }
 
     try {
-      const response = await axios.get('https://extravagant-back.vercel.app/tiendas/pendientes');
+      const response = await axios.get('https://extravagant-back-1.onrender.com/tiendas/pendientes');
       setTiendasPendientes(response.data);
       localStorage.setItem('cachedTiendasPendientes', JSON.stringify(response.data));
     } catch (error) {
@@ -54,7 +54,7 @@ const ApproveStoresComponent = () => {
 
   const fetchUsuarios = async () => {
     try {
-      const response = await axios.get('https://extravagant-back.vercel.app/usuarios');
+      const response = await axios.get('https://extravagant-back-1.onrender.com/usuarios');
       setUsuarios(response.data);
     } catch (error) {
       console.error("Error al obtener usuarios: ", error);
@@ -72,7 +72,7 @@ const ApproveStoresComponent = () => {
     }
 
     try {
-      await axios.put(`https://extravagant-back.vercel.app/tienda/aprobar/${id}`);
+      await axios.put(`https://extravagant-back-1.onrender.com/tienda/aprobar/${id}`);
       setMessage("Tienda aprobada con éxito.");
       fetchTiendasPendientes();
     } catch (error) {
@@ -93,7 +93,7 @@ const ApproveStoresComponent = () => {
     }
 
     try {
-      await axios.put(`https://extravagant-back.vercel.app/tienda/rechazar/${id}`);
+      await axios.put(`https://extravagant-back-1.onrender.com/tienda/rechazar/${id}`);
       setMessage("Tienda rechazada con éxito.");
       fetchTiendasPendientes();
     } catch (error) {
@@ -145,7 +145,7 @@ const ApproveStoresComponent = () => {
               <p><strong>Fecha de Creación:</strong> {new Date(tienda.creacion).toLocaleDateString()}</p>
               {tienda.logo && (
                 <img
-                  src={`https://extravagant-back.vercel.app/uploads/${tienda.logo}`}
+                  src={`https://extravagant-back-1.onrender.com/uploads/${tienda.logo}`}
                   alt={`Logo de ${tienda.NombreTienda}`}
                   className="tienda-logo"
                 />

@@ -37,7 +37,7 @@ export default function RegistroComponent() {
     };
   
     try {
-      const responseRegistro = await fetch("https://extravagant-back.vercel.app/registro", {
+      const responseRegistro = await fetch("https://extravagant-back-1.onrender.com/registro", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(objetoParaBackend)
@@ -48,7 +48,7 @@ export default function RegistroComponent() {
         const userId = dataRegistro.user.ID_Usuario;
         await registrarCarrito(userId);
 
-        const responseLogin = await fetch("https://extravagant-back.vercel.app/login", {
+        const responseLogin = await fetch("https://extravagant-back-1.onrender.com/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ Correo, Contraseña })
@@ -84,7 +84,7 @@ export default function RegistroComponent() {
       ID_Usuario: userId
     };
 
-    const responseCarrito = await fetch("https://extravagant-back.vercel.app/carrito/registro", {
+    const responseCarrito = await fetch("https://extravagant-back-1.onrender.com/carrito/registro", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(carritoObjeto)

@@ -18,7 +18,7 @@ const OfferForm = ({ onSubmit, offer, closeModal, idTienda }) => {
     useEffect(() => {
         const fetchProductos = async () => {
             try {
-                const response = await axios.get(`https://extravagant-back.vercel.app/producto/tienda/${idTienda}`);
+                const response = await axios.get(`https://extravagant-back-1.onrender.com/producto/tienda/${idTienda}`);
                 setProductos(response.data);
             } catch (error) {
                 console.error("Error al obtener productos: ", error);
@@ -167,7 +167,7 @@ const OfferManager = () => {
 
     const fetchIdTienda = async () => {
         try {
-            const response = await axios.get(`https://extravagant-back.vercel.app/tienda/${userData}`);
+            const response = await axios.get(`https://extravagant-back-1.onrender.com/tienda/${userData}`);
             if (response.data.length > 0) {
                 const tienda = response.data[0];
                 setIdTienda(tienda.ID_Tienda);
@@ -182,7 +182,7 @@ const OfferManager = () => {
 
     const fetchProductos = async (idTienda) => { 
         try {
-            const response = await axios.get(`https://extravagant-back.vercel.app/producto/tienda/${idTienda}`);
+            const response = await axios.get(`https://extravagant-back-1.onrender.com/producto/tienda/${idTienda}`);
             const productosMap = {};
             response.data.forEach(producto => {
                 productosMap[producto.ID_Producto] = producto.Nombre_Producto;
@@ -196,7 +196,7 @@ const OfferManager = () => {
     const fetchOffers = async () => {
         if (idTienda) {
             try {
-                const response = await axios.get(`https://extravagant-back.vercel.app/oferta/tienda/${idTienda}`);
+                const response = await axios.get(`https://extravagant-back-1.onrender.com/oferta/tienda/${idTienda}`);
                 setOffers(response.data);
             } catch (error) {
                 console.error("Error al obtener ofertas: ", error);
@@ -231,7 +231,7 @@ const OfferManager = () => {
                 return;
             }
 
-            const existingOffers = await axios.get(`https://extravagant-back.vercel.app/oferta/tienda/${idTienda}`);
+            const existingOffers = await axios.get(`https://extravagant-back-1.onrender.com/oferta/tienda/${idTienda}`);
             const isDuplicate = existingOffers.data.some(existingOffer => 
                 existingOffer.ID_Producto === offer.ID_Producto &&
                 existingOffer.Fecha_Inicio === offer.Fecha_Inicio &&
@@ -261,9 +261,9 @@ const OfferManager = () => {
             }
 
             if (currentOffer) {
-                await axios.put(`https://extravagant-back.vercel.app/ofertas/${currentOffer.ID_Oferta}`, updatedOffer);
+                await axios.put(`https://extravagant-back-1.onrender.com/ofertas/${currentOffer.ID_Oferta}`, updatedOffer);
             } else {
-                await axios.post('https://extravagant-back.vercel.app/createofertas', updatedOffer);
+                await axios.post('https://extravagant-back-1.onrender.com/createofertas', updatedOffer);
             }
 
             fetchOffers();
@@ -298,7 +298,7 @@ const OfferManager = () => {
             return;
         }
         try {
-            await axios.delete(`https://extravagant-back.vercel.app/ofertas/${offerId}`);
+            await axios.delete(`https://extravagant-back-1.onrender.com/ofertas/${offerId}`);
             setOffers(prevOffers => prevOffers.filter(offer => offer.ID_Oferta !== offerId));
         } catch (error) {
             console.error("Error al eliminar oferta: ", error);

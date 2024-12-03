@@ -28,7 +28,7 @@ const SellerProfileComponent = () => {
     if (!userId || !isOnline) return;
 
     try {
-      const response = await axios.get(`https://extravagant-back.vercel.app/tienda`, {
+      const response = await axios.get(`https://extravagant-back-1.onrender.com/tienda`, {
         params: { ID_Usuario: userId }
       });
       if (response.data) {
@@ -74,13 +74,13 @@ const SellerProfileComponent = () => {
       let response;
       if (isEditing) {
         response = await axios.post(
-          `https://extravagant-back.vercel.app/tienda/${currentTiendaId}`, 
+          `https://extravagant-back-1.onrender.com/tienda/${currentTiendaId}`, 
           formDataToSend, 
           config
         );
       } else {
         response = await axios.post(
-          'https://extravagant-back.vercel.app/createtienda', 
+          'https://extravagant-back-1.onrender.com/createtienda', 
           formDataToSend,
           config
         );
@@ -136,7 +136,7 @@ const SellerProfileComponent = () => {
     const confirmed = window.confirm("¿Estás seguro de que deseas eliminar esta tienda?");
     if (confirmed) {
       try {
-        await axios.delete(`https://extravagant-back.vercel.app/tienda/${id}`);
+        await axios.delete(`https://extravagant-back-1.onrender.com/tienda/${id}`);
         fetchTiendas();
         setMessage("Tienda eliminada con éxito.");
       } catch (error) {
@@ -275,7 +275,7 @@ const SellerProfileComponent = () => {
               )}
               {tienda.logo && (
                 <img
-                  src={`https://extravagant-back.vercel.app/uploads/${tienda.logo}`}
+                  src={`https://extravagant-back-1.onrender.com/uploads/${tienda.logo}`}
                   alt={`Logo de ${tienda.NombreTienda}`}
                   className="tienda-logo"
                 />

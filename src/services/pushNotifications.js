@@ -95,7 +95,7 @@ const subscribeToPushNotifications = async () => {
                 throw new Error('Usuario no identificado');
             }
 
-            const response = await axios.post('https://extravagant-back.vercel.app/subscribe', {
+            const response = await axios.post('https://extravagant-back-1.onrender.com/subscribe', {
                 subscription: existingSubscription.toJSON(),
                 userId: userId
             });
@@ -137,7 +137,7 @@ const subscribeToPushNotifications = async () => {
             throw new Error('Usuario no identificado');
         }
 
-        const response = await axios.post('https://extravagant-back.vercel.app/subscribe', {
+        const response = await axios.post('https://extravagant-back-1.onrender.com/subscribe', {
             subscription: subscription.toJSON(),
             userId: userId
         });

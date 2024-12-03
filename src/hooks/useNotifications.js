@@ -53,7 +53,7 @@ export const useNotifications = () => {
                 )
             });
 
-            await axios.post('https://extravagant-back.vercel.app/subscribe', {
+            await axios.post('https://extravagant-back-1.onrender.com/subscribe', {
                 subscription,
                 userId
             });
@@ -74,7 +74,7 @@ export const useNotifications = () => {
             
             if (subscription) {
                 await subscription.unsubscribe();
-                await axios.delete('https://extravagant-back.vercel.app/unsubscribe', {
+                await axios.delete('https://extravagant-back-1.onrender.com/unsubscribe', {
                     data: {
                         endpoint: subscription.endpoint,
                         userId

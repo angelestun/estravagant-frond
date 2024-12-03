@@ -26,7 +26,7 @@ const ApprovedCouponsComponent = () => {
             return;
         }
         try {
-            const response = await axios.get('https://extravagant-back.vercel.app/tienda');
+            const response = await axios.get('https://extravagant-back-1.onrender.com/tienda');
             setTiendas(response.data);
         } catch (error) {
             console.error("Error al obtener tiendas: ", error);
@@ -53,7 +53,7 @@ const ApprovedCouponsComponent = () => {
             return;
         }
         try {
-            const response = await axios.get('https://extravagant-back.vercel.app/cupones/aprobados');
+            const response = await axios.get('https://extravagant-back-1.onrender.com/cupones/aprobados');
             setCuponesAprobados(response.data);
         } catch (error) {
             console.error("Error al obtener cupones aprobados: ", error);
@@ -71,7 +71,7 @@ const ApprovedCouponsComponent = () => {
         }
 
         try {
-            await axios.delete(`https://extravagant-back.vercel.app/cupones/${id}`);
+            await axios.delete(`https://extravagant-back-1.onrender.com/cupones/${id}`);
             setCuponesAprobados(cuponesAprobados.filter(cupon => cupon.ID_Cupones !== id));
             alert("Cupón eliminado con éxito");
         } catch (error) {

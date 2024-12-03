@@ -30,7 +30,7 @@ export default function LoginComponent() {
     const objetoParaBackend = { Correo, Contraseña };
 
     try {
-      const response = await fetch("https://extravagant-back.vercel.app/login", {
+      const response = await fetch("https://extravagant-back-1.onrender.com/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(objetoParaBackend)

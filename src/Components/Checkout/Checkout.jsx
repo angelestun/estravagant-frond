@@ -93,7 +93,7 @@ const Checkout = () => {
   useEffect(() => {
     return () => {
       if (isCouponApplied && couponCode) {
-        fetch(`https://extravagant-back.vercel.app/api/coupons/release/${couponCode}?userId=${userData}`, {
+        fetch(`https://extravagant-back-1.onrender.com/api/coupons/release/${couponCode}?userId=${userData}`, {
           method: 'DELETE'
         }).catch(error => {
           console.error('Error al liberar cupón:', error);
@@ -105,7 +105,7 @@ const Checkout = () => {
   const handleCouponApply = async () => {
     try {
       const response = await fetch(
-        `https://extravagant-back.vercel.app/api/coupons/${couponCode}?subtotal=${subtotal}&userId=${userData}`
+        `https://extravagant-back-1.onrender.com/api/coupons/${couponCode}?subtotal=${subtotal}&userId=${userData}`
       );
       const result = await response.json();
   
@@ -197,7 +197,7 @@ const Checkout = () => {
     console.log('Datos de orden a enviar:', orderData);
   
     try {
-      const response = await fetch('https://extravagant-back.vercel.app/api/create-order', {
+      const response = await fetch('https://extravagant-back-1.onrender.com/api/create-order', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -409,7 +409,7 @@ const Checkout = () => {
                       orderId: response.orderId
                     });
           
-                    const moveResponse = await fetch('https://extravagant-back.vercel.app/api/coupons/move-to-used', {
+                    const moveResponse = await fetch('https://extravagant-back-1.onrender.com/api/coupons/move-to-used', {
                       method: 'POST',
                       headers: {
                         'Content-Type': 'application/json'
@@ -431,7 +431,7 @@ const Checkout = () => {
           
                   try {
                     console.log('Iniciando limpieza del carrito...');
-                    const cartClearResponse = await fetch(`https://extravagant-back.vercel.app/carrito/clear/${userData}`, {
+                    const cartClearResponse = await fetch(`https://extravagant-back-1.onrender.com/carrito/clear/${userData}`, {
                       method: 'DELETE'
                     });
                     
@@ -468,7 +468,7 @@ const Checkout = () => {
               if (couponCode) {
                 try {
                   await fetch(
-                    `https://extravagant-back.vercel.app/api/coupons/release/${couponCode}?userId=${userData}`,
+                    `https://extravagant-back-1.onrender.com/api/coupons/release/${couponCode}?userId=${userData}`,
                     { method: 'DELETE' }
                   );
                 } catch (releaseError) {
@@ -483,7 +483,7 @@ const Checkout = () => {
           onError={(err) => {
             console.error('PayPal Error:', err);
             if (isCouponApplied && couponCode) {
-              fetch(`https://extravagant-back.vercel.app/api/coupons/release/${couponCode}?userId=${userData}`, {
+              fetch(`https://extravagant-back-1.onrender.com/api/coupons/release/${couponCode}?userId=${userData}`, {
                 method: 'DELETE'
               }).catch(error => {
                 console.error('Error al liberar cupón:', error);
@@ -494,7 +494,7 @@ const Checkout = () => {
           onCancel={() => {
             console.log('Pago cancelado por el usuario');
             if (isCouponApplied && couponCode) {
-              fetch(`https://extravagant-back.vercel.app/api/coupons/release/${couponCode}?userId=${userData}`, {
+              fetch(`https://extravagant-back-1.onrender.com/api/coupons/release/${couponCode}?userId=${userData}`, {
                 method: 'DELETE'
               }).catch(error => {
                 console.error('Error al liberar cupón después de cancelación:', error);

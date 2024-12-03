@@ -42,7 +42,7 @@ const ApprovedStoresComponent = () => {
         }
 
         try {
-            const response = await axios.get('https://extravagant-back.vercel.app/tienda');
+            const response = await axios.get('https://extravagant-back-1.onrender.com/tienda');
             const approvedStores = response.data.filter(tienda => tienda.activo === 1 || tienda.activo === 3);
             setTiendasAprobadas(approvedStores);
             localStorage.setItem('cachedTiendasAprobadas', JSON.stringify(approvedStores));
@@ -58,7 +58,7 @@ const ApprovedStoresComponent = () => {
 
     const fetchUsuarios = async () => {
         try {
-          const response = await axios.get('https://extravagant-back.vercel.app/usuarios'); 
+          const response = await axios.get('https://extravagant-back-1.onrender.com/usuarios'); 
           setUsuarios(response.data);
         } catch (error) {
           console.error("Error al obtener usuarios: ", error);
@@ -105,7 +105,7 @@ const ApprovedStoresComponent = () => {
         }
 
         try {
-            const response = await axios.put(`https://extravagant-back.vercel.app/tienda/activar/${id}`);
+            const response = await axios.put(`https://extravagant-back-1.onrender.com/tienda/activar/${id}`);
             showNotification(
                 'Éxito',
                 response.data.message,
@@ -132,7 +132,7 @@ const ApprovedStoresComponent = () => {
         }
 
         try {
-            await axios.delete(`https://extravagant-back.vercel.app/tienda/${id}`);
+            await axios.delete(`https://extravagant-back-1.onrender.com/tienda/${id}`);
             setConfirmarEliminarId(null);
             fetchTiendasAprobadas();
             showNotification(
@@ -195,7 +195,7 @@ const ApprovedStoresComponent = () => {
             <div className="grid">
                 {filteredStores.map((tienda) => (
                     <div key={tienda.ID_Tienda} className="store">
-                        <img src={`https://extravagant-back.vercel.app/uploads/${tienda.logo}`} alt={`Logo de ${tienda.NombreTienda}`} className="tienda-logo" />
+                        <img src={`https://extravagant-back-1.onrender.com/uploads/${tienda.logo}`} alt={`Logo de ${tienda.NombreTienda}`} className="tienda-logo" />
                         <h2 className="store-name-admin">{tienda.NombreTienda}</h2>
                         <p>{tienda.Descripcion}</p>
                         <p><strong>Vendedor:</strong> {getUsuarioNombre(tienda.ID_Usuario)} {getUsuarioApellido(tienda.ID_Usuario)}</p>

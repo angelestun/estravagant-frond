@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './ProductosComponent.css';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { useConnectivity } from '../../context/ConnectivityProvider';
-
 
 const ProductosComponent = () => {
   const userData = localStorage.getItem('userId');
@@ -15,11 +14,9 @@ const ProductosComponent = () => {
   const [descripcionExpandida, setDescripcionExpandida] = useState({});
   const { isOnline, showNotification } = useConnectivity();
   const [loading, setLoading] = useState(true);
-
-
- 
+  const [imageError, setImageError] = useState({});
   const [paginaActual, setPaginaActual] = useState(1);
-  const productosPorPagina = 6; 
+  const productosPorPagina = 6;
 
   const initialProductoState = {
     Nombre_Producto: '',
@@ -28,7 +25,8 @@ const ProductosComponent = () => {
     Stock: '',
     Talla: '',
     Color: '',
-    Imagen: null,
+    Imagen: '',
+    ImagenUrl: '', // Nuevo campo para URLs
     Categoria: '',
     Marca: '',
   };
@@ -64,53 +62,28 @@ const ProductosComponent = () => {
     }
   };
 
-  const getImageUrl = (imagen) => {
-    if (!imagen) {
-      return '/assets/placeholder.jpg'; 
+  const obtenerProductos = async () => {
+    if (!userData || !idTienda) {
+      setNotificacion('Error: ID de usuario o tienda no están definidos.');
+      return;
     }
-  
+
     try {
-      if (imagen.startsWith('uploads/')) {
-        return `https://extravagant-back-1.onrender.com/${imagen}`;
-      } else {
-        return `https://extravagant-back-1.onrender.com/uploads/products/${imagen}`;
-      }
+      setLoading(true);
+      const response = await axios.get('https://extravagant-back-1.onrender.com/productos/tienda', {
+        params: {
+          ID_Usuario: userData,
+          ID_Tienda: idTienda,
+        },
+      });
+      setProductos(response.data);
     } catch (error) {
-      console.error('Error con la URL de la imagen:', error);
-      return '/assets/placeholder.jpg';
+      setNotificacion('Error al obtener productos: ' + (error.response ? error.response.data.error : 'Error de conexión.'));
+    } finally {
+      setLoading(false);
     }
   };
-  
 
-const obtenerProductos = async () => {
-  if (!userData || !idTienda) {
-    setNotificacion('Error: ID de usuario o tienda no están definidos.');
-    return;
-  }
-
-  try {
-    setLoading(true);
-    const response = await axios.get('https://extravagant-back-1.onrender.com/productos/tienda', {
-      params: {
-        ID_Usuario: userData,
-        ID_Tienda: idTienda,
-      },
-    });
-    const productosConImagenes = response.data.map(producto => ({
-      ...producto,
-      Imagen: producto.Imagen && producto.Imagen !== 'null' && producto.Imagen !== 'undefined' 
-        ? producto.Imagen 
-        : null
-    }));
-    setProductos(productosConImagenes);
-  } catch (error) {
-    setNotificacion('Error al obtener productos: ' + (error.response ? error.response.data.error : 'Error de conexión.'));
-  } finally {
-    setLoading(false);
-  }
-};
-
-  
   const handleInputChange = (event) => {
     setFiltro(event.target.value);
   };
@@ -120,18 +93,28 @@ const obtenerProductos = async () => {
     setNuevoProducto({ ...nuevoProducto, [name]: value });
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file && file.type.startsWith('image/')) {
-      setNuevoProducto({ ...nuevoProducto, Imagen: file });
-      setImagePreview(URL.createObjectURL(file));
-    } else {
-      alert('Por favor, selecciona un archivo de imagen.');
-      setNuevoProducto({ ...nuevoProducto, Imagen: null });
-      setImagePreview(null);
-    }
+  const handleImageUrlChange = (e) => {
+    const url = e.target.value;
+    setNuevoProducto({
+      ...nuevoProducto,
+      ImagenUrl: url,
+      Imagen: url // Mantenemos compatibilidad con el sistema existente
+    });
+    setImagePreview(url);
   };
 
+  const validarCampos = () => {
+    const { Nombre_Producto, Descripcion, Precio, Stock, Talla, Color, ImagenUrl, Categoria, Marca } = nuevoProducto;
+    if (!Nombre_Producto || !Descripcion || !Precio || !Stock || !Talla || !Color || !ImagenUrl || !Categoria || !Marca) {
+      alert('Por favor, completa todos los campos.');
+      return false;
+    }
+    if (Precio < 0 || Stock < 0) {
+      alert('El precio y el stock no pueden ser negativos.');
+      return false;
+    }
+    return true;
+  };
 
   const handleAgregarProducto = async (e) => {
     e.preventDefault();
@@ -144,53 +127,26 @@ const obtenerProductos = async () => {
       return;
     }
     if (!validarCampos()) return;
-  
-    const formData = new FormData();
-    for (const key in nuevoProducto) {
-      formData.append(key, nuevoProducto[key]);
-    }
-    formData.append('ID_Usuario', userData);
-    formData.append('ID_Tienda', idTienda);
-  
+
     try {
-      const response = await axios.post('https://extravagant-back-1.onrender.com/productos', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-  
+      const productData = {
+        ...nuevoProducto,
+        ID_Usuario: userData,
+        ID_Tienda: idTienda,
+      };
+
+      const response = await axios.post('https://extravagant-back-1.onrender.com/productos', productData);
+
       setProductos(prevProductos => [
         ...prevProductos,
-        { ...nuevoProducto, ID_Producto: response.data.id, Imagen: response.data.imagen }
+        { ...nuevoProducto, ID_Producto: response.data.id }
       ]);
-  
+
       handleCerrarModal();
       setNotificacion('Producto agregado con éxito.');
     } catch (error) {
       setNotificacion('Error al agregar producto: ' + (error.response ? error.response.data.error : 'Error de conexión.'));
     }
-  };
-
-  const validarCampos = () => {
-    const { Nombre_Producto, Descripcion, Precio, Stock, Talla, Color, Imagen, Categoria, Marca } = nuevoProducto;
-    if (!Nombre_Producto || !Descripcion || !Precio || !Stock || !Talla || !Color || !Imagen || !Categoria || !Marca) {
-      alert('Por favor, completa todos los campos.');
-      return false;
-    }
-    if (Precio < 0 || Stock < 0) {
-      alert('El precio y el stock no pueden ser negativos.');
-      return false;
-    }
-    return true;
-  };
-
-  const handleCerrarModal = () => {
-    setModalVisible(false);
-    setNuevoProducto(initialProductoState);
-    setNotificacion('');
-    setIsEditMode(false);
-    setCurrentProducto(null);
-    setImagePreview(null);
   };
 
   const handleEditProducto = (producto) => {
@@ -202,54 +158,38 @@ const obtenerProductos = async () => {
       );
       return;
     }
-    setNuevoProducto(producto);
+    setNuevoProducto({
+      ...producto,
+      ImagenUrl: producto.Imagen // Convertir la imagen existente a URL
+    });
     setCurrentProducto(producto.ID_Producto);
     setIsEditMode(true);
     setModalVisible(true);
-    setImagePreview(`https://extravagant-back-1.onrender.com/uploads/products/${producto.Imagen}`);
+    setImagePreview(producto.Imagen);
   };
 
-const handleActualizarProducto = async (e) => {
-  e.preventDefault();
-  if (!isOnline) {
-    showNotification(
-      'Conexión Requerida',
-      'Se necesita conexión a Internet para actualizar productos',
-      'warning'
-    );
-    return;
-  }
+  const handleActualizarProducto = async (e) => {
+    e.preventDefault();
+    if (!validarCampos()) return;
 
-  const formData = new FormData();
-  for (const key in nuevoProducto) {
-    if (key === 'Imagen' && !nuevoProducto[key]) continue; 
-    formData.append(key, nuevoProducto[key]);
-  }
+    try {
+      const response = await axios.put(`https://extravagant-back-1.onrender.com/productos/${currentProducto}`, {
+        ...nuevoProducto,
+        Imagen: nuevoProducto.ImagenUrl // Usar la URL como imagen
+      });
 
-  try {
-    const response = await axios.put(`https://extravagant-back-1.onrender.com/productos/${currentProducto}`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
+      setProductos(productos.map(prod =>
+        prod.ID_Producto === currentProducto
+          ? { ...prod, ...nuevoProducto, Imagen: nuevoProducto.ImagenUrl }
+          : prod
+      ));
 
-    const updatedProductos = productos.map(prod => 
-      prod.ID_Producto === currentProducto 
-        ? { 
-            ...prod, 
-            ...nuevoProducto,
-            Imagen: nuevoProducto.Imagen ? response.data.imagen : prod.Imagen 
-          } 
-        : prod
-    );
-
-    setProductos(updatedProductos);
-    handleCerrarModal();
-    setNotificacion('Producto actualizado con éxito.');
-  } catch (error) {
-    setNotificacion('Error al actualizar producto: ' + (error.response ? error.response.data.error : 'Error de conexión.'));
-  }
-};
+      handleCerrarModal();
+      setNotificacion('Producto actualizado con éxito.');
+    } catch (error) {
+      setNotificacion('Error al actualizar producto: ' + (error.response ? error.response.data.error : 'Error de conexión.'));
+    }
+  };
 
   const handleEliminarProducto = async (id) => {
     if (!isOnline) {
@@ -260,13 +200,36 @@ const handleActualizarProducto = async (e) => {
       );
       return;
     }
-    try {
-      await axios.delete(`https://extravagant-back-1.onrender.com/productos/${id}`);
-      setProductos(productos.filter(producto => producto.ID_Producto !== id));
-      setNotificacion('Producto eliminado con éxito.');
-    } catch (error) {
-      setNotificacion('Error al eliminar producto: ' + (error.response ? error.response.data.error : 'Error de conexión.'));
+    if (window.confirm('¿Estás seguro de que deseas eliminar este producto?')) {
+      try {
+        await axios.delete(`https://extravagant-back-1.onrender.com/productos/${id}`);
+        setProductos(productos.filter(producto => producto.ID_Producto !== id));
+        setNotificacion('Producto eliminado con éxito.');
+      } catch (error) {
+        setNotificacion('Error al eliminar producto: ' + (error.response ? error.response.data.error : 'Error de conexión.'));
+      }
     }
+  };
+
+  const handleCerrarModal = () => {
+    setModalVisible(false);
+    setNuevoProducto(initialProductoState);
+    setNotificacion('');
+    setIsEditMode(false);
+    setCurrentProducto(null);
+    setImagePreview(null);
+  };
+
+  const getImageUrl = (imagen) => {
+    if (!imagen) return '/assets/placeholder.jpg';
+    
+    // Si la imagen es una URL completa, usarla directamente
+    if (imagen.startsWith('http://') || imagen.startsWith('https://')) {
+      return imagen;
+    }
+    
+    // Si no, usar la ruta del backend como antes
+    return `https://extravagant-back-1.onrender.com/uploads/products/${imagen}`;
   };
 
   const productosFiltrados = productos.filter(producto =>
@@ -341,11 +304,13 @@ const handleActualizarProducto = async (e) => {
                 <td>{producto.Categoria}</td>
                 <td>{producto.Marca}</td>
                 <td>
-                <img
-                    src={producto.Imagen ? `https://extravagant-back-1.onrender.com/uploads/products/${producto.Imagen}` : 'ruta/por_defecto.jpg'}
+                  <img
+                    src={getImageUrl(producto.Imagen)}
                     alt="Imagen de Producto"
                     style={{ width: '100px', height: 'auto' }}
-                    onError={(e) => { e.target.src = 'ruta/por_defecto.jpg'; }} 
+                    onError={(e) => {
+                      e.target.src = '/assets/placeholder.jpg';
+                    }}
                   />
                 </td>
                 <td>
@@ -358,7 +323,6 @@ const handleActualizarProducto = async (e) => {
         </table>
         
         <div className="pagination">
-
           {Array.from({ length: totalPaginas }, (_, index) => (
             <button
               key={index}
@@ -368,31 +332,25 @@ const handleActualizarProducto = async (e) => {
               {index + 1}
             </button>
           ))}
-  
         </div>
       </div>
+
       {modalVisible && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-fadeIn">
           <div className="bg-white w-full max-w-lg rounded-xl shadow-xl relative overflow-hidden animate-slideIn">
-            {/* Header */}
             <div className="bg-gradient-to-r from-purple-600 to-purple-800 px-6 py-4 flex justify-between items-center">
               <h2 className="text-xl font-semibold text-white">
                 {isEditMode ? 'Editar Producto' : 'Agregar Nuevo Producto'}
               </h2>
-              <button 
-                onClick={handleCerrarModal}
-                className="text-white hover:bg-white/20 rounded-full p-1 transition-colors"
-              >
+              <button onClick={handleCerrarModal} className="text-white hover:bg-white/20 rounded-full p-1">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
 
-            {/* Form Content */}
             <div className="p-6 max-h-[calc(100vh-200px)] overflow-y-auto">
               <form onSubmit={isEditMode ? handleActualizarProducto : handleAgregarProducto} className="space-y-4">
-                {/* Input Groups */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">
@@ -403,7 +361,7 @@ const handleActualizarProducto = async (e) => {
                       name="Nombre_Producto"
                       value={nuevoProducto.Nombre_Producto}
                       onChange={handleInputChangeNuevoProducto}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
                       required
                     />
                   </div>
@@ -417,7 +375,7 @@ const handleActualizarProducto = async (e) => {
                       name="Precio"
                       value={nuevoProducto.Precio}
                       onChange={handleInputChangeNuevoProducto}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
                       min="0"
                       required
                     />
@@ -432,7 +390,7 @@ const handleActualizarProducto = async (e) => {
                       name="Stock"
                       value={nuevoProducto.Stock}
                       onChange={handleInputChangeNuevoProducto}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
                       min="0"
                       required
                     />
@@ -447,7 +405,7 @@ const handleActualizarProducto = async (e) => {
                       name="Talla"
                       value={nuevoProducto.Talla}
                       onChange={handleInputChangeNuevoProducto}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
                       required
                     />
                   </div>
@@ -461,7 +419,7 @@ const handleActualizarProducto = async (e) => {
                       name="Color"
                       value={nuevoProducto.Color}
                       onChange={handleInputChangeNuevoProducto}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
                       required
                     />
                   </div>
@@ -475,7 +433,7 @@ const handleActualizarProducto = async (e) => {
                       name="Categoria"
                       value={nuevoProducto.Categoria}
                       onChange={handleInputChangeNuevoProducto}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
                       required
                     />
                   </div>
@@ -489,7 +447,7 @@ const handleActualizarProducto = async (e) => {
                       name="Marca"
                       value={nuevoProducto.Marca}
                       onChange={handleInputChangeNuevoProducto}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
                       required
                     />
                   </div>
@@ -503,7 +461,7 @@ const handleActualizarProducto = async (e) => {
                     name="Descripcion"
                     value={nuevoProducto.Descripcion}
                     onChange={handleInputChangeNuevoProducto}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     rows="3"
                     required
                   />
@@ -511,35 +469,33 @@ const handleActualizarProducto = async (e) => {
 
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">
-                    {isEditMode ? 'Cambiar Imagen (opcional)' : 'Imagen del Producto'}
+                    URL de Imagen
                   </label>
-                  <div className="flex items-center space-x-4">
-                    <div className="flex-1">
-                      <input
-                        type="file"
-                        onChange={handleFileChange}
-                        accept="image/*"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                        required={!isEditMode && !nuevoProducto.Imagen}
+                  <input
+                    type="text"
+                    name="ImagenUrl"
+                    value={nuevoProducto.ImagenUrl}
+                    onChange={handleImageUrlChange}
+                    placeholder="https://ejemplo.com/imagen.jpg"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    required
+                  />
+                  <p className="mt-1 text-sm text-gray-500">
+                    Ingresa la URL de la imagen del producto
+                  </p>
+                  {imagePreview && (
+                    <div className="mt-2">
+                      <img
+                        src={imagePreview}
+                        alt="Vista previa"
+                        className="w-32 h-32 object-cover rounded-lg border-2 border-purple-500"
+                        onError={(e) => {
+                          e.target.src = '/assets/placeholder.jpg';
+                          setImageError({...imageError, [nuevoProducto.ImagenUrl]: true});
+                        }}
                       />
-                      <p className="mt-1 text-sm text-gray-500">
-                        Tamaño recomendado: 1000x1000 px
-                      </p>
                     </div>
-                    <div className="flex-shrink-0">
-                      {(imagePreview || nuevoProducto.Imagen) && (
-                        <img
-                          src={imagePreview || `https://extravagant-back-1.onrender.com/uploads/products/${nuevoProducto.Imagen}`}
-                          alt="Vista previa"
-                          className="w-20 h-20 object-cover rounded-lg border-2 border-purple-500"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = '/placeholder-image.jpg'; 
-                          }}
-                        />
-                      )}
-                    </div>
-                  </div>
+                  )}
                 </div>
 
                 <div className="pt-4">

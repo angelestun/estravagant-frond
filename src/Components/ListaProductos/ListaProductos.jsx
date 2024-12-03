@@ -15,10 +15,8 @@ const ListaProductos = () => {
   const [featuredOffers, setFeaturedOffers] = useState([]);
   const { isOnline, showNotification } = useConnectivity();
   
-
   const userId = localStorage.getItem('userId');
-  const storeId = localStorage.getItem('IdTienda');
-
+  const storeId = localStorage.getItem('idTienda');
 
   const syncPendingCartItems = async () => {
     try {
@@ -67,7 +65,7 @@ const ListaProductos = () => {
 
         try {
             const response = await fetch(
-                `https://extravagant-back-1.onrender.com/producto/tienda?ID_Usuario=${userId}&ID_Tienda=${storeId}`,
+                `https://extravagant-back-1.onrender.com/productos/tienda?ID_Usuario=${userId}&ID_Tienda=${storeId}`,
                 { headers: { 'Cache-Control': 'no-cache' } }
             );
             if (!response.ok) throw new Error('Error al obtener productos');
@@ -98,7 +96,6 @@ const ListaProductos = () => {
 
     return () => clearInterval(intervalId);
 }, [userId, storeId, isOnline]);
-
 
   const fetchOffers = async (products) => {
     try {
@@ -135,15 +132,12 @@ const ListaProductos = () => {
         setError('Error al obtener ofertas: ' + err.message);
         setLoading(false);
     }
-};
-
+  };
 
   const findFeaturedOffers = (products) => {
     const offers = products.filter(product => product.Oferta);
-
     const discountOffers = offers.filter(product => product.Descuento > 0);
     const twoForOneOffers = offers.filter(product => product.Tipo_Oferta === '2x1');
-
     const sortedDiscounts = discountOffers.sort((a, b) => b.Descuento - a.Descuento);
 
     let highlighted;
@@ -156,10 +150,9 @@ const ListaProductos = () => {
     }
 
     setFeaturedOffers(highlighted);
-
     setProducts(products);
   };
-
+  
   const handleAddToCart = async (productId) => {
     const product = products.find(product => product.ID_Producto === productId);
     if (!product) return;
@@ -250,11 +243,14 @@ const ListaProductos = () => {
               className="tarjeta-producto-destacada"
               onMouseEnter={() => setHoveredProductId(offer.ID_Producto)}
               onMouseLeave={() => setHoveredProductId(null)}>
-              <img 
-                src={`https://extravagant-back-1.onrender.com/uploads/products/${offer.Imagen}`} 
-                alt={offer.Nombre_Producto} 
-                className="imagen-producto" 
-              />
+                <img 
+                  src={offer.Imagen?.startsWith('http') ? offer.Imagen : '/assets/placeholder.jpg'} 
+                  alt={offer.Nombre_Producto} 
+                  className="imagen-producto"
+                  onError={(e) => {
+                    e.target.src = '/assets/placeholder.jpg';
+                  }} 
+                />
               <div className="detalles-producto">
                 <h3 className="nombre-producto">{offer.Nombre_Producto}</h3>
                 {offer.Tipo_Oferta === '2x1' ? (
@@ -299,11 +295,14 @@ const ListaProductos = () => {
             <div key={product.ID_Producto} className={`tarjeta-producto ${isFeatured ? 'destacada' : ''}`}
               onMouseEnter={() => setHoveredProductId(product.ID_Producto)}
               onMouseLeave={() => setHoveredProductId(null)}>
-              <img src={`https://extravagant-back-1.onrender.com/uploads/products/${product.Imagen}`} alt={product.Nombre_Producto} className="imagen-producto" />
-              <div className="detalles-producto">
-                <h3 className="nombre-producto">{product.Nombre_Producto}</h3>
-                {product.Oferta ? (
-                  <>
+                      <img 
+                        src={product.Imagen?.startsWith('http') ? product.Imagen : '/assets/placeholder.jpg'} 
+                        alt={product.Nombre_Producto} 
+                        className="imagen-producto"
+                        onError={(e) => {
+                          e.target.src = '/assets/placeholder.jpg';
+                        }} 
+                      />
                     {product.Tipo_Oferta === '2x1' ? (
                       <p className="oferta-dos-por-uno" style={{ color: 'black' }}>
                         {formatPrice(product.Precio)}

@@ -142,40 +142,36 @@ const StoreListComponent = () => {
   return (
     <div className="store-list-container">
       <div className="store-list">
-      {stores.length > 0 ? (
-        stores.map((store) => (
-          <div
-            key={store.ID_Tienda}
-            className="store-card"
-            onMouseEnter={() => setHoveredStoreId(store.ID_Tienda)}
-            onMouseLeave={() => setHoveredStoreId(null)}
-          >
-            {store.logo && (
-              <img
-                src={store.logo}
-                alt={`${store.NombreTienda} logo`}
-                className="store-logo"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = '/placeholder-store-logo.jpg';
-                }}
-              />
-            )}
-            <div className="store-details">
-              <h3 className="store-name">{store.NombreTienda}</h3>
-              <p className="store-description">{store.Descripcion}</p>
-            </div>
-            <button
-              className={`visit-button ${hoveredStoreId === store.ID_Tienda ? 'visible' : ''}`}
-              onClick={() => handleVisit(store.ID_Tienda)}
+        {stores.length > 0 ? (
+          stores.map((store) => (
+            <div
+              key={store.ID_Tienda}
+              className="store-card"
+              onMouseEnter={() => setHoveredStoreId(store.ID_Tienda)}
+              onMouseLeave={() => setHoveredStoreId(null)}
             >
-              Visitar
-            </button>
-          </div>
-        ))
-      ) : (
-        <p>No hay tiendas disponibles</p>
-      )}
+              {store.logo && (
+                <img
+                  src={`https://extravagant-back.vercel.app/uploads/${store.logo}`}
+                  alt={`${store.NombreTienda} logo`}
+                  className="store-logo"
+                />
+              )}
+              <div className="store-details">
+                <h3 className="store-name">{store.NombreTienda}</h3>
+                <p className="store-description">{store.Descripcion}</p>
+              </div>
+              <button
+                className={`visit-button ${hoveredStoreId === store.ID_Tienda ? 'visible' : ''}`}
+                onClick={() => handleVisit(store.ID_Tienda)}
+              >
+                Visitar
+              </button>
+            </div>
+          ))
+        ) : (
+          <p>No hay tiendas disponibles</p>
+        )}
       </div>
     </div>
   );

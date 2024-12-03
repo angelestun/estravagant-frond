@@ -527,16 +527,13 @@ const CartComponent = ({ cartItems, setCartItems }) => {
                         return (
                             <div key={item.ID_Producto} className="cart-item">
                                 <img 
-                                    src={item.Imagen?.trim() ? 
-                                        `https://extravagant-back.vercel.app/uploads/products/${item.Imagen}` : 
-                                        'http://via.placeholder.com/150'
-                                    } 
-                                    alt={item.Nombre_Producto || "Producto sin nombre"} 
-                                    className="cart-item-image"
-                                    onError={(e) => {
-                                        e.target.onerror = null;
-                                        e.target.src = 'http://via.placeholder.com/150';
-                                    }}
+                                src={item.Imagen ? item.Imagen : 'http://via.placeholder.com/150'} 
+                                alt={item.Nombre_Producto || "Producto sin nombre"} 
+                                className="cart-item-image"
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = 'http://via.placeholder.com/150';
+                                }}
                                 />
                                 <div className="cart-item-details">
                                     <h3>{item.Nombre_Producto || "Nombre no disponible"}</h3>

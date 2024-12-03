@@ -263,34 +263,38 @@ const SellerProfileComponent = () => {
 
       <h2>Mi Tienda</h2>
       <div className="tiendas-list">
-        {tiendas.map((tienda) => (
-          <div className="tienda-card" key={tienda.ID_Tienda}>
-            <div className="tienda-details">
-              <h2>(ID: {tienda.ID_Tienda})</h2>
-              <h2 className="store-name-admin">{tienda.NombreTienda}</h2>
-              <p>{tienda.Descripcion}</p>
-              <p><strong>Estado:</strong> {tienda.activo === 0 ? 'Pendiente' : (tienda.activo === 1 ? 'Aceptada' : (tienda.activo === 2 ? 'Rechazada' : 'Baja'))}</p>
-              {tienda.activo === 3 && (
-                <p><strong>Motivo de Baja:</strong> {tienda.motivo_baja}</p>
+      {tiendas.map((tienda) => (
+        <div className="tienda-card" key={tienda.ID_Tienda}>
+          <div className="tienda-details">
+            <h2>(ID: {tienda.ID_Tienda})</h2>
+            <h2 className="store-name-admin">{tienda.NombreTienda}</h2>
+            <p>{tienda.Descripcion}</p>
+            <p><strong>Estado:</strong> {tienda.activo === 0 ? 'Pendiente' : (tienda.activo === 1 ? 'Aceptada' : (tienda.activo === 2 ? 'Rechazada' : 'Baja'))}</p>
+            {tienda.activo === 3 && (
+              <p><strong>Motivo de Baja:</strong> {tienda.motivo_baja}</p>
+            )}
+            {tienda.logo && (
+              <img
+                src={tienda.logo} 
+                alt={`Logo de ${tienda.NombreTienda}`}
+                className="tienda-logo"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = '/placeholder-store-logo.jpg';
+                }}
+              />
+            )}
+            <div className="tienda-actions">
+              {(tienda.activo === 1 || tienda.activo === 2) && (
+                <>
+                  <button onClick={() => startEdit(tienda)} className="edit-btn">Editar</button>
+                  <button onClick={() => handleEliminar(tienda.ID_Tienda)} className="delete-btn">Eliminar</button>
+                </>
               )}
-              {tienda.logo && (
-                <img
-                  src={`https://extravagant-back.vercel.app/uploads/${tienda.logo}`}
-                  alt={`Logo de ${tienda.NombreTienda}`}
-                  className="tienda-logo"
-                />
-              )}
-                <div className="tienda-actions">
-                  {(tienda.activo === 1 || tienda.activo === 2) && (
-                    <>
-                      <button onClick={() => startEdit(tienda)} className="edit-btn">Editar</button>
-                      <button onClick={() => handleEliminar(tienda.ID_Tienda)} className="delete-btn">Eliminar</button>
-                    </>
-                  )}
-                </div>
-              </div>
             </div>
-          ))}
+          </div>
+        </div>
+      ))}
         </div>
    
       {isModalOpen && (

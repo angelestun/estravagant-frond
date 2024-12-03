@@ -65,22 +65,9 @@ const ProductosComponent = () => {
   };
 
   const getImageUrl = (imagen) => {
-    if (!imagen) {
-      return '/assets/placeholder.jpg'; 
-    }
-  
-    try {
-      if (imagen.startsWith('uploads/')) {
-        return `https://extravagant-back.vercel.app/${imagen}`;
-      } else {
-        return `https://extravagant-back.vercel.app/uploads/products/${imagen}`;
-      }
-    } catch (error) {
-      console.error('Error con la URL de la imagen:', error);
-      return '/assets/placeholder.jpg';
-    }
+    if (!imagen) return '/assets/placeholder.jpg';
+    return imagen;
   };
-  
 
 const obtenerProductos = async () => {
   if (!userData || !idTienda) {
@@ -342,11 +329,11 @@ const handleActualizarProducto = async (e) => {
                 <td>{producto.Marca}</td>
                 <td>
                 <img
-                    src={producto.Imagen ? `https://extravagant-back.vercel.app/uploads/products/${producto.Imagen}` : 'ruta/por_defecto.jpg'}
-                    alt="Imagen de Producto"
-                    style={{ width: '100px', height: 'auto' }}
-                    onError={(e) => { e.target.src = 'ruta/por_defecto.jpg'; }} 
-                  />
+                  src={getImageUrl(producto.Imagen)}
+                  alt="Imagen de Producto"
+                  style={{ width: '100px', height: 'auto' }}
+                  onError={(e) => { e.target.src = '/assets/placeholder.jpg'; }}
+                />
                 </td>
                 <td>
                   <button onClick={() => handleEditProducto(producto)}>Editar</button>

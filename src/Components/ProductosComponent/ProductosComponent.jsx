@@ -102,7 +102,6 @@ const ProductosComponent = () => {
     });
     setImagePreview(url); // Establece la vista previa de la imagen
   };
-  
 
   const validarCampos = () => {
     const { Nombre_Producto, Descripcion, Precio, Stock, Talla, Color, ImagenUrl, Categoria, Marca } = nuevoProducto;
@@ -124,14 +123,14 @@ const ProductosComponent = () => {
       return;
     }
     if (!validarCampos()) return;
-  
+
     try {
       const productData = {
         ...nuevoProducto,
         ID_Usuario: userData,
         ID_Tienda: idTienda,
       };
-  
+
       const response = await axios.post('https://extravagant-back-1.onrender.com/productos', productData);
       setProductos(prevProductos => [...prevProductos, { ...nuevoProducto, ID_Producto: response.data.id }]);
       handleCerrarModal();
@@ -141,7 +140,6 @@ const ProductosComponent = () => {
       setNotificacion('Error al agregar producto: ' + (error.response ? error.response.data.error : 'Error de conexión.'));
     }
   };
-  
 
   const handleEditProducto = (producto) => {
     if (!isOnline) {
@@ -185,6 +183,7 @@ const ProductosComponent = () => {
       setNotificacion('Error al actualizar producto: ' + (error.response ? error.response.data.error : 'Error de conexión.'));
     }
   };
+
   const handleEliminarProducto = async (id) => {
     if (!isOnline) {
       showNotification(
@@ -254,264 +253,181 @@ const ProductosComponent = () => {
       </div>
 
       <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-2xl font-bold mb-4">Tabla De Productos</h2>
-        <input
-          type="text"
-          className="w-full p-2 border border-gray-300 rounded mb-4"
-          placeholder="Buscar por nombre"
-          value={filtro}
-          onChange={handleInputChange}
-        />
+        <h2 className="text-2xl font-semibold mb-6">Productos</h2>
         
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descripción</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Talla</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Color</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoría</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Marca</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Imagen</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {productosPaginados.map((producto, index) => (
-                <tr key={`${producto.ID_Producto}-${index}`}>
-                  <td className="px-6 py-4 whitespace-nowrap">{producto.Nombre_Producto}</td>
-                  <td 
-                    className="px-6 py-4 cursor-pointer"
-                    onClick={() => toggleDescripcion(index)}
-                  >
-                    {descripcionExpandida[index] ? producto.Descripcion : `${producto.Descripcion.slice(0, 50)}...`}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">${producto.Precio}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{producto.Stock}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{producto.Talla}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{producto.Color}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{producto.Categoria}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{producto.Marca}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <img
-                      src={producto.Imagen}
-                      alt="Producto"
-                      className="h-20 w-20 object-cover rounded"
-                      onError={(e) => {
-                        e.target.src = '/assets/placeholder.jpg';
-                      }}
-                    />
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap space-x-2">
-                    <button 
-                      onClick={() => handleEditProducto(producto)}
-                      className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-                    >
-                      Editar
-                    </button>
-                    <button 
-                      onClick={() => handleEliminarProducto(producto.ID_Producto)}
-                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                    >
-                      Eliminar
-                    </button>
-                  </td>
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Buscar producto..."
+            value={filtro}
+            onChange={handleInputChange}
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+        </div>
+
+        {loading ? (
+          <div>Loading...</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full">
+              <thead>
+                <tr>
+                  <th className="border-b py-2 px-4 text-left">Nombre</th>
+                  <th className="border-b py-2 px-4 text-left">Descripción</th>
+                  <th className="border-b py-2 px-4 text-left">Precio</th>
+                  <th className="border-b py-2 px-4 text-left">Stock</th>
+                  <th className="border-b py-2 px-4 text-left">Acciones</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {productosPaginados.map((producto) => (
+                  <tr key={producto.ID_Producto}>
+                    <td className="border-b py-2 px-4">{producto.Nombre_Producto}</td>
+                    <td className="border-b py-2 px-4">
+                      <button
+                        onClick={() => toggleDescripcion(producto.ID_Producto)}
+                        className="text-blue-500"
+                      >
+                        {descripcionExpandida[producto.ID_Producto] ? 'Ver menos' : 'Ver más'}
+                      </button>
+                      {descripcionExpandida[producto.ID_Producto] && (
+                        <p>{producto.Descripcion}</p>
+                      )}
+                    </td>
+                    <td className="border-b py-2 px-4">{producto.Precio}</td>
+                    <td className="border-b py-2 px-4">{producto.Stock}</td>
+                    <td className="border-b py-2 px-4">
+                      <button
+                        onClick={() => handleEditProducto(producto)}
+                        className="bg-blue-500 text-white px-2 py-1 rounded mr-2"
+                      >
+                        Editar
+                      </button>
+                      <button
+                        onClick={() => handleEliminarProducto(producto.ID_Producto)}
+                        className="bg-red-500 text-white px-2 py-1 rounded"
+                      >
+                        Eliminar
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
 
-        <div className="mt-4 flex justify-center space-x-2">
-          {Array.from({ length: totalPaginas }, (_, index) => (
-            <button
-              key={index}
-              onClick={() => cambiarPagina(index + 1)}
-              className={`px-3 py-1 rounded ${
-                paginaActual === index + 1
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-gray-200 hover:bg-gray-300'
-              }`}
-            >
-              {index + 1}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {modalVisible && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="bg-gradient-to-r from-purple-600 to-purple-800 px-6 py-4 flex justify-between items-center rounded-t-lg">
-              <h2 className="text-xl font-semibold text-white">
-                {isEditMode ? 'Editar Producto' : 'Agregar Nuevo Producto'}
-              </h2>
+            <div className="mt-4 flex justify-between">
               <button 
-                onClick={handleCerrarModal}
-                className="text-white hover:bg-white/20 rounded-full p-1"
+                onClick={() => cambiarPagina(paginaActual - 1)}
+                disabled={paginaActual === 1}
+                className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
               >
-                ×
+                Anterior
+              </button>
+              <div>
+                Página {paginaActual} de {totalPaginas}
+              </div>
+              <button
+                onClick={() => cambiarPagina(paginaActual + 1)}
+                disabled={paginaActual === totalPaginas}
+                className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+              >
+                Siguiente
               </button>
             </div>
-
-            <div className="p-6">
-              <form onSubmit={isEditMode ? handleActualizarProducto : handleAgregarProducto} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Nombre del Producto
-                    </label>
-                    <input
-                      type="text"
-                      name="Nombre_Producto"
-                      value={nuevoProducto.Nombre_Producto}
-                      onChange={handleInputChangeNuevoProducto}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Precio
-                    </label>
-                    <input
-                      type="number"
-                      name="Precio"
-                      value={nuevoProducto.Precio}
-                      onChange={handleInputChangeNuevoProducto}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      min="0"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Stock
-                    </label>
-                    <input
-                      type="number"
-                      name="Stock"
-                      value={nuevoProducto.Stock}
-                      onChange={handleInputChangeNuevoProducto}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      min="0"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Talla
-                    </label>
-                    <input
-                      type="text"
-                      name="Talla"
-                      value={nuevoProducto.Talla}
-                      onChange={handleInputChangeNuevoProducto}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Color
-                    </label>
-                    <input
-                      type="text"
-                      name="Color"
-                      value={nuevoProducto.Color}
-                      onChange={handleInputChangeNuevoProducto}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Categoría
-                    </label>
-                    <input
-                      type="text"
-                      name="Categoria"
-                      value={nuevoProducto.Categoria}
-                      onChange={handleInputChangeNuevoProducto}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Marca
-                    </label>
-                    <input
-                      type="text"
-                      name="Marca"
-                      value={nuevoProducto.Marca}
-                      onChange={handleInputChangeNuevoProducto}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Descripción
-                  </label>
-                  <textarea
-                    name="Descripcion"
-                    value={nuevoProducto.Descripcion}
-                    onChange={handleInputChangeNuevoProducto}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    rows="3"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    URL de Imagen
-                  </label>
-                  <input
-                    type="text"
-                    name="ImagenUrl"
-                    value={nuevoProducto.ImagenUrl}
-                    onChange={handleImageUrlChange}
-                    placeholder="https://ejemplo.com/imagen.jpg"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    required
-                  />
-                    {imagePreview && (
-                      <div className="mt-2">
-                        <img
-                          src={imagePreview}  // Muestra la imagen en base a la URL ingresada
-                          alt="Vista previa"
-                          className="h-32 w-32 object-cover rounded-lg border-2 border-purple-500"
-                          onError={(e) => {
-                            e.target.src = '/assets/placeholder.jpg';  // Imagen predeterminada
-                            setImageError({...imageError, [nuevoProducto.ImagenUrl]: true});  // Registro del error
-                          }}
-                          
-                        />
-                      </div>
-                    )}
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 transition-colors"
-                >
+          </div>
+        )}
+      </div>
+      {modalVisible && (
+        <div className="modal">
+          <div className="modal-content">
+            <h2>{isEditMode ? 'Editar Producto' : 'Agregar Producto'}</h2>
+            <form onSubmit={isEditMode ? handleActualizarProducto : handleAgregarProducto}>
+              <label>Nombre del Producto</label>
+              <input
+                type="text"
+                name="Nombre_Producto"
+                value={nuevoProducto.Nombre_Producto}
+                onChange={handleInputChangeNuevoProducto}
+                required
+              />
+              <label>Descripción</label>
+              <input
+                type="text"
+                name="Descripcion"
+                value={nuevoProducto.Descripcion}
+                onChange={handleInputChangeNuevoProducto}
+                required
+              />
+              <label>Precio</label>
+              <input
+                type="number"
+                name="Precio"
+                value={nuevoProducto.Precio}
+                onChange={handleInputChangeNuevoProducto}
+                required
+              />
+              <label>Stock</label>
+              <input
+                type="number"
+                name="Stock"
+                value={nuevoProducto.Stock}
+                onChange={handleInputChangeNuevoProducto}
+                required
+              />
+              <label>Talla</label>
+              <input
+                type="text"
+                name="Talla"
+                value={nuevoProducto.Talla}
+                onChange={handleInputChangeNuevoProducto}
+                required
+              />
+              <label>Color</label>
+              <input
+                type="text"
+                name="Color"
+                value={nuevoProducto.Color}
+                onChange={handleInputChangeNuevoProducto}
+                required
+              />
+              <label>Imagen URL</label>
+              <input
+                type="url"
+                name="ImagenUrl"
+                value={nuevoProducto.ImagenUrl}
+                onChange={handleImageUrlChange}
+                required
+              />
+              {imagePreview && <img src={imagePreview} alt="Vista previa" className="image-preview" />}
+              <label>Categoría</label>
+              <input
+                type="text"
+                name="Categoria"
+                value={nuevoProducto.Categoria}
+                onChange={handleInputChangeNuevoProducto}
+                required
+              />
+              <label>Marca</label>
+              <input
+                type="text"
+                name="Marca"
+                value={nuevoProducto.Marca}
+                onChange={handleInputChangeNuevoProducto}
+                required
+              />
+              <div className="actions">
+                <button type="submit">
                   {isEditMode ? 'Actualizar Producto' : 'Agregar Producto'}
                 </button>
-              </form>
-            </div>
+                <button
+                  type="button"
+                  className="close-modal"
+                  onClick={handleCerrarModal}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

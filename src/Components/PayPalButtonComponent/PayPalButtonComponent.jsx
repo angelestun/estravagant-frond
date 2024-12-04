@@ -87,6 +87,7 @@ const PayPalButtonComponent = ({
             }
           });
         }}
+        
         onApprove={async (data, actions) => {
           try {
             const order = await actions.order.capture();

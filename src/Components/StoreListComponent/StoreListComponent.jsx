@@ -34,73 +34,41 @@ const StoreListComponent = () => {
     return cached ? JSON.parse(cached) : [];
   };
 
-// En StoreListComponent.jsx
-const requestNotificationPermission = async () => {
-  if (!('Notification' in window) || !('serviceWorker' in navigator)) {
-      console.log('Este navegador no soporta notificaciones push');
+  const requestNotificationPermission = async () => {
+    if (localStorage.getItem('notificationsDenied')) {
       return;
-  }
+    }
 
-  if (localStorage.getItem('notificationsDenied')) {
+    if (Notification.permission === 'granted') {
       return;
-  }
+    }
 
-  try {
+    try {
       const permission = await Notification.requestPermission();
       
       if (permission === 'granted') {
-          const registration = await navigator.serviceWorker.ready;
-          
-          // Primero verificar si ya existe una suscripción
-          const existingSubscription = await registration.pushManager.getSubscription();
-          if (existingSubscription) {
-              console.log('Ya existe una suscripción');
-              return;
-          }
+        const registration = await navigator.serviceWorker.ready;
+        const subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: 'BL8TL4HNOLqhA819AaYm7ifoluzHeabMLZtQjHnkpz_j95PxnTub_0u8lp2pG4vFXXIO01Uf6dTuXuFIjR-ctVM'
+        });
 
-          try {
-              const subscription = await registration.pushManager.subscribe({
-                  userVisibleOnly: true,
-                  applicationServerKey: 'BL8TL4HNOLqhA819AaYm7ifoluzHeabMLZtQjHnkpz_j95PxnTub_0u8lp2pG4vFXXIO01Uf6dTuXuFIjR-ctVM'
-              });
-
-              const userId = localStorage.getItem('userId');
-              if (!userId) {
-                  throw new Error('Usuario no identificado');
-              }
-
-              const response = await fetch('https://extravagant-back-1.onrender.com/subscribe', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                      subscription,
-                      userId
-                  }),
-              });
-
-              if (!response.ok) {
-                  const errorData = await response.json();
-                  throw new Error(errorData.error || 'Error en la suscripción');
-              }
-
-              console.log('Suscripción exitosa');
-          } catch (subscriptionError) {
-              console.error('Error en la suscripción:', subscriptionError);
-              // Limpiar la suscripción si hubo error
-              const currentSubscription = await registration.pushManager.getSubscription();
-              if (currentSubscription) {
-                  await currentSubscription.unsubscribe();
-              }
-              throw subscriptionError;
-          }
+        const userId = localStorage.getItem('userId');
+        await fetch('https://extravagant-back-1.onrender.com/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            subscription: subscription,
+            userId: userId
+          }),
+        });
       } else if (permission === 'denied') {
-          localStorage.setItem('notificationsDenied', 'true');
+        localStorage.setItem('notificationsDenied', 'true');
       }
-  } catch (error) {
+    } catch (error) {
       console.error('Error al configurar notificaciones:', error);
-      showNotification('Error', 'No se pudieron configurar las notificaciones', 'error');
-  }
-};
+    }
+  };
 
   useEffect(() => {
     const fetchStores = async () => {

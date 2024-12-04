@@ -404,7 +404,7 @@ const Checkout = () => {
                         'Accept': 'application/json',
                     },
                     body: JSON.stringify(data),
-                    credentials: 'include', // Permitir el uso de cookies si es necesario
+                    // credentials: 'include', // Permitir el uso de cookies si es necesario
                 });
         
                 // Verificar si la respuesta es exitosa

@@ -1,15 +1,15 @@
 const CACHE_NAME = 'extravagant-style-v1';
 const OFFLINE_URL = '/offline.html';
+const BASE_URL = 'https://extravagant-style.vercel.app'
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
     '/offline.html',
-    '/icon-192x192.png',
-    '/icon-512x512.png',
-    '/favicon.ico'
-
+    `${BASE_URL}/android-chrome-192x192.png`,
+    `${BASE_URL}/android-chrome-512x512.png`,
+    `${BASE_URL}/favicon.ico`,
+    `${BASE_URL}/manifest.json`
 ];
-
 let lastOnlineStatus = navigator.onLine;
 
 const broadcastConnectivityStatus = (isOnline) => {
@@ -175,23 +175,48 @@ self.addEventListener('push', function(event) {
     try {
         const notificationData = event.data ? event.data.json() : {};
         
+        // Usar rutas absolutas para los íconos
         const options = {
             ...notificationData.notification,
-            icon: '/android-chrome-192x192.png',  // Actualizado para coincidir con manifest
-            badge: '/android-chrome-192x192.png',  // Actualizado para coincidir con manifest
+            icon: `${BASE_URL}/android-chrome-192x192.png`,
+            badge: `${BASE_URL}/android-chrome-192x192.png`,
             data: {
                 url: notificationData.notification.data?.url || '/',
                 ...notificationData.notification.data
             },
             requireInteraction: true,
-            vibrate: [100, 50, 100]
+            vibrate: [100, 50, 100],
+            // Añadir un fallback para el ícono
+            silent: false,
+            renotify: false,
+            timestamp: Date.now(),
+            actions: [
+                {
+                    action: 'open',
+                    title: 'Ver más',
+                    icon: `${BASE_URL}/android-chrome-192x192.png`
+                }
+            ]
         };
+
+        // Añadir logging para debug
+        console.log('Mostrando notificación con opciones:', options);
 
         event.waitUntil(
             self.registration.showNotification(
                 notificationData.notification.title,
                 options
-            )
+            ).catch(error => {
+                console.error('Error mostrando notificación:', error);
+                // Intentar con una versión simplificada si falla
+                return self.registration.showNotification(
+                    notificationData.notification.title,
+                    {
+                        body: notificationData.notification.body,
+                        icon: `${BASE_URL}/favicon.ico` // Usar un ícono más pequeño como fallback
+                    }
+                );
+            })
         );
     } catch (error) {
         console.error('Error procesando push:', error);

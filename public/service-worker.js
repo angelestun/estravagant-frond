@@ -176,25 +176,34 @@ self.addEventListener('push', function(event) {
         const notificationData = event.data ? event.data.json() : {};
         
         if (!notificationData.notification) {
-            console.error('Datos de notificación inválidos');
-            return;
+            throw new Error('Datos de notificación inválidos');
         }
 
         const options = {
-            body: notificationData.notification.body,
-            icon: '/icon-192x192.png',
-            badge: '/icon-192x192.png',
+            ...notificationData.notification,
+            icon: notificationData.notification.icon || '/icon-192x192.png',
+            badge: notificationData.notification.badge || '/icon-192x192.png',
             data: {
-                url: notificationData.notification.data?.url || '/'
+                url: notificationData.notification.data?.url || '/',
+                ...notificationData.notification.data
             },
-            requireInteraction: true
+            requireInteraction: true,
+            vibrate: [100, 50, 100],
+            actions: [
+                {
+                    action: 'open',
+                    title: 'Ver más'
+                }
+            ]
         };
 
         event.waitUntil(
             self.registration.showNotification(
                 notificationData.notification.title,
                 options
-            )
+            ).catch(error => {
+                console.error('Error mostrando notificación:', error);
+            })
         );
     } catch (error) {
         console.error('Error procesando push:', error);
@@ -210,24 +219,29 @@ self.addEventListener('notificationclick', function(event) {
     console.log('[Service Worker] Notificación clickeada');
     event.notification.close();
 
-    if (event.action === 'open') {
-        const urlToOpen = event.notification.data.url || '/';
-        event.waitUntil(
-            clients.matchAll({type: 'window'}).then(function(clientList) {
-                // Intentar encontrar una ventana ya abierta
-                for (const client of clientList) {
-                    if (client.url === urlToOpen && 'focus' in client) {
-                        return client.focus();
-                    }
+    const urlToOpen = event.notification.data?.url || '/';
+
+    event.waitUntil(
+        clients.matchAll({
+            type: 'window',
+            includeUncontrolled: true
+        })
+        .then(function(clientList) {
+            // Intentar encontrar una ventana ya abierta
+            for (const client of clientList) {
+                if (client.url === urlToOpen && 'focus' in client) {
+                    return client.focus();
                 }
-                // Si no hay ventana abierta, abrir una nueva
-                if (clients.openWindow) {
-                    return clients.openWindow(urlToOpen);
-                }
-            })
-        );
-    }
+            }
+            // Si no hay ventana abierta, abrir una nueva
+            return clients.openWindow(urlToOpen);
+        })
+        .catch(error => {
+            console.error('Error al manejar click en notificación:', error);
+        })
+    );
 });
+
 
 
 self.addEventListener('notificationclose', function(event) {

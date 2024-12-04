@@ -192,28 +192,34 @@ const Checkout = () => {
         Monto_Descuento: parseFloat(discounts.couponDiscount).toFixed(2),
         Monto_Oferta: parseFloat(discounts.offerDiscount).toFixed(2),
     };
-  
-    try {
-      const response = await fetch('https://extravagant-back-1.onrender.com/api/create-order', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-          body: JSON.stringify(orderData),
-      });
 
-      if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || 'Error al crear el pedido');
-      }
-      
-      const data = await response.json();
-      return data;
-  } catch (error) {
-      console.error('Error en handleCreateOrder:', error);
-      throw error;
-  }
+    try {
+        console.log('Enviando orderData:', orderData);
+        
+        const response = await fetch('https://extravagant-back-1.onrender.com/api/create-order', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify(orderData),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Error response:', errorData);
+            throw new Error(errorData.message || 'Error al crear el pedido');
+        }
+
+        const data = await response.json();
+        console.log('Respuesta exitosa:', data);
+        return data;
+    } catch (error) {
+        console.error('Error detallado en handleCreateOrder:', error);
+        console.error('Stack trace:', error.stack);
+        throw error;
+    }
 };
 
   return (
@@ -355,44 +361,42 @@ const Checkout = () => {
               }]
             });
           }}
+          
           onApprove={async (data, actions) => {
             try {
-              console.log('Iniciando proceso de aprobación PayPal');
-              const orderData = await actions.order.capture();
-              console.log('PayPal Capture Response:', orderData);
-          
-              const savedCouponDiscount = parseFloat(Cookies.get('couponDiscount') || '0');
-              const couponCode = Cookies.get('couponCode');
-              
-              const orderSubtotal = Math.max(parseFloat(subtotal || 0), 0).toFixed(2);
-              const orderOfferDiscount = Math.max(parseFloat(totalDirectDiscount || 0), 0).toFixed(2);
-              const orderCouponDiscount = Math.max(parseFloat(savedCouponDiscount || 0), 0).toFixed(2);
-              
-              const finalTotal = Math.max(
-                parseFloat(orderSubtotal) - 
-                parseFloat(orderOfferDiscount) - 
-                parseFloat(orderCouponDiscount),
-                0.01
-              ).toFixed(2);
-          
-              console.log('Enviando orden al servidor:', {
-                paypalOrderId: orderData.id,
-                total: finalTotal,
-                discounts: {
-                  offerDiscount: orderOfferDiscount,
-                  couponDiscount: orderCouponDiscount
-                }
-              });
-          
-              const response = await handleCreateOrder(
-                orderData.id,
-                finalTotal,
-                {
-                  offerDiscount: orderOfferDiscount,
-                  couponDiscount: orderCouponDiscount
-                }
-              );
-          
+                console.log('Iniciando proceso de aprobación PayPal');
+                const orderData = await actions.order.capture();
+                console.log('PayPal Capture Response:', orderData);
+        
+                const savedCouponDiscount = parseFloat(Cookies.get('couponDiscount') || '0');
+                const orderSubtotal = Math.max(parseFloat(subtotal || 0), 0).toFixed(2);
+                const orderOfferDiscount = Math.max(parseFloat(totalDirectDiscount || 0), 0).toFixed(2);
+                const orderCouponDiscount = Math.max(parseFloat(savedCouponDiscount || 0), 0).toFixed(2);
+        
+                const finalTotal = Math.max(
+                    parseFloat(orderSubtotal) - 
+                    parseFloat(orderOfferDiscount) - 
+                    parseFloat(orderCouponDiscount),
+                    0.01
+                ).toFixed(2);
+        
+                console.log('Datos a enviar:', {
+                    paypalOrderId: orderData.id,
+                    finalTotal,
+                    discounts: {
+                        offerDiscount: orderOfferDiscount,
+                        couponDiscount: orderCouponDiscount
+                    }
+                });
+        
+                const response = await handleCreateOrder(
+                    orderData.id,
+                    finalTotal,
+                    {
+                        offerDiscount: orderOfferDiscount,
+                        couponDiscount: orderCouponDiscount
+                    }
+                );
               console.log('Respuesta del servidor:', response);
           
               if (response && response.orderId) {

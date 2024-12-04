@@ -8,6 +8,10 @@ import { useConnectivity } from '../../context/ConnectivityProvider';
 
 
 const CartComponent = ({ cartItems, setCartItems }) => {
+
+    const defaultImage = "/images/default-product.jpg"; 
+    
+
     const { isOnline, showNotification } = useConnectivity();  
     const [productsWithoutOffers, setProductsWithoutOffers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -527,13 +531,13 @@ const CartComponent = ({ cartItems, setCartItems }) => {
                         return (
                             <div key={item.ID_Producto} className="cart-item">
                                 <img 
-                                src={item.Imagen ? item.Imagen : 'http://via.placeholder.com/150'} 
-                                alt={item.Nombre_Producto || "Producto sin nombre"} 
-                                className="cart-item-image"
-                                onError={(e) => {
-                                    e.target.onerror = null;
-                                    e.target.src = 'http://via.placeholder.com/150';
-                                }}
+                                    src={item.Imagen || defaultImage}
+                                    alt={item.Nombre_Producto || "Producto sin nombre"} 
+                                    className="cart-item-image"
+                                    onError={(e) => {
+                                        e.target.onerror = null;
+                                        e.target.src = defaultImage;
+                                    }}
                                 />
                                 <div className="cart-item-details">
                                     <h3>{item.Nombre_Producto || "Nombre no disponible"}</h3>
@@ -595,22 +599,19 @@ const CartComponent = ({ cartItems, setCartItems }) => {
                     })}
 
                    
-                    {productsWithoutOffers.length > 0 && (
+{productsWithoutOffers.length > 0 && (
                         <div>
                             {productsWithoutOffers.map((item) => {
                                 const subtotal = (item.Precio * item.Cantidad).toFixed(2);
                                 return (
                                     <div key={item.ID_Producto} className="cart-item">
                                         <img 
-                                            src={item.Imagen?.trim() ? 
-                                                `https://extravagant-back-1.onrender.com/uploads/products/${item.Imagen}` : 
-                                                'http://via.placeholder.com/150'
-                                            } 
+                                            src={item.Imagen || defaultImage}
                                             alt={item.Nombre_Producto || "Producto sin nombre"} 
                                             className="cart-item-image"
                                             onError={(e) => {
                                                 e.target.onerror = null;
-                                                e.target.src = 'http://via.placeholder.com/150';
+                                                e.target.src = defaultImage;
                                             }}
                                         />
                                         <div className="cart-item-details">

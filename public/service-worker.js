@@ -1,15 +1,13 @@
 const CACHE_NAME = 'extravagant-style-v1';
 const OFFLINE_URL = '/offline.html';
-const BASE_URL = 'https://extravagant-style.vercel.app'
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
     '/offline.html',
-    `${BASE_URL}/android-chrome-192x192.png`,
-    `${BASE_URL}/android-chrome-512x512.png`,
-    `${BASE_URL}/favicon.ico`,
-    `${BASE_URL}/manifest.json`
+    '/icon-192x192.png',
+    '/icon-512x512.png',
 ];
+
 let lastOnlineStatus = navigator.onLine;
 
 const broadcastConnectivityStatus = (isOnline) => {
@@ -75,8 +73,6 @@ self.addEventListener('offline', () => {
 });
 
 // En el fetch event handler
-
-
 
 self.addEventListener('navigationpreload', (event) => {
     event.respondWith(
@@ -172,51 +168,31 @@ self.addEventListener('fetch', (event) => {
 });
 
 self.addEventListener('push', function(event) {
+    console.log('Push recibido:', event.data?.text());
+    
     try {
         const notificationData = event.data ? event.data.json() : {};
         
-        // Usar rutas absolutas para los íconos
-        const options = {
-            ...notificationData.notification,
-            icon: `${BASE_URL}/android-chrome-192x192.png`,
-            badge: `${BASE_URL}/android-chrome-192x192.png`,
-            data: {
-                url: notificationData.notification.data?.url || '/',
-                ...notificationData.notification.data
-            },
-            requireInteraction: true,
-            vibrate: [100, 50, 100],
-            // Añadir un fallback para el ícono
-            silent: false,
-            renotify: false,
-            timestamp: Date.now(),
-            actions: [
-                {
-                    action: 'open',
-                    title: 'Ver más',
-                    icon: `${BASE_URL}/android-chrome-192x192.png`
-                }
-            ]
-        };
+        if (!notificationData.notification) {
+            console.error('Datos de notificación inválidos');
+            return;
+        }
 
-        // Añadir logging para debug
-        console.log('Mostrando notificación con opciones:', options);
+        const options = {
+            body: notificationData.notification.body,
+            icon: '/icon-192x192.png',
+            badge: '/icon-192x192.png',
+            data: {
+                url: notificationData.notification.data?.url || '/'
+            },
+            requireInteraction: true
+        };
 
         event.waitUntil(
             self.registration.showNotification(
                 notificationData.notification.title,
                 options
-            ).catch(error => {
-                console.error('Error mostrando notificación:', error);
-                // Intentar con una versión simplificada si falla
-                return self.registration.showNotification(
-                    notificationData.notification.title,
-                    {
-                        body: notificationData.notification.body,
-                        icon: `${BASE_URL}/favicon.ico` // Usar un ícono más pequeño como fallback
-                    }
-                );
-            })
+            )
         );
     } catch (error) {
         console.error('Error procesando push:', error);
@@ -232,29 +208,24 @@ self.addEventListener('notificationclick', function(event) {
     console.log('[Service Worker] Notificación clickeada');
     event.notification.close();
 
-    const urlToOpen = event.notification.data?.url || '/';
-
-    event.waitUntil(
-        clients.matchAll({
-            type: 'window',
-            includeUncontrolled: true
-        })
-        .then(function(clientList) {
-            // Intentar encontrar una ventana ya abierta
-            for (const client of clientList) {
-                if (client.url === urlToOpen && 'focus' in client) {
-                    return client.focus();
+    if (event.action === 'open') {
+        const urlToOpen = event.notification.data.url || '/';
+        event.waitUntil(
+            clients.matchAll({type: 'window'}).then(function(clientList) {
+                // Intentar encontrar una ventana ya abierta
+                for (const client of clientList) {
+                    if (client.url === urlToOpen && 'focus' in client) {
+                        return client.focus();
+                    }
                 }
-            }
-            // Si no hay ventana abierta, abrir una nueva
-            return clients.openWindow(urlToOpen);
-        })
-        .catch(error => {
-            console.error('Error al manejar click en notificación:', error);
-        })
-    );
+                // Si no hay ventana abierta, abrir una nueva
+                if (clients.openWindow) {
+                    return clients.openWindow(urlToOpen);
+                }
+            })
+        );
+    }
 });
-
 
 
 self.addEventListener('notificationclose', function(event) {

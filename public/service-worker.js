@@ -6,6 +6,8 @@ const ASSETS_TO_CACHE = [
     '/offline.html',
     '/icon-192x192.png',
     '/icon-512x512.png',
+    '/favicon.ico'
+
 ];
 
 let lastOnlineStatus = navigator.onLine;
@@ -170,40 +172,26 @@ self.addEventListener('fetch', (event) => {
 });
 
 self.addEventListener('push', function(event) {
-    console.log('Push recibido:', event.data?.text());
-    
     try {
         const notificationData = event.data ? event.data.json() : {};
         
-        if (!notificationData.notification) {
-            throw new Error('Datos de notificación inválidos');
-        }
-
         const options = {
             ...notificationData.notification,
-            icon: notificationData.notification.icon || '/icon-192x192.png',
-            badge: notificationData.notification.badge || '/icon-192x192.png',
+            icon: '/android-chrome-192x192.png',  // Actualizado para coincidir con manifest
+            badge: '/android-chrome-192x192.png',  // Actualizado para coincidir con manifest
             data: {
                 url: notificationData.notification.data?.url || '/',
                 ...notificationData.notification.data
             },
             requireInteraction: true,
-            vibrate: [100, 50, 100],
-            actions: [
-                {
-                    action: 'open',
-                    title: 'Ver más'
-                }
-            ]
+            vibrate: [100, 50, 100]
         };
 
         event.waitUntil(
             self.registration.showNotification(
                 notificationData.notification.title,
                 options
-            ).catch(error => {
-                console.error('Error mostrando notificación:', error);
-            })
+            )
         );
     } catch (error) {
         console.error('Error procesando push:', error);

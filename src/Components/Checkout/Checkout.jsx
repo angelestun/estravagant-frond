@@ -192,25 +192,24 @@ const Checkout = () => {
         Monto_Descuento: parseFloat(discounts.couponDiscount).toFixed(2),
         Monto_Oferta: parseFloat(discounts.offerDiscount).toFixed(2),
     };
-
+  
     try {
         const response = await fetch('https://extravagant-back-1.onrender.com/api/create-order', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json',
+                'Accept': 'application/json'
             },
             credentials: 'include',
-            mode: 'cors',
             body: JSON.stringify(orderData),
         });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Error al crear el pedido');
-        }
-
         const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.message || 'Error al crear el pedido');
+        }
+        
         return data;
     } catch (error) {
         console.error('Error en handleCreateOrder:', error);

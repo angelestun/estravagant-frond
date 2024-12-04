@@ -74,6 +74,8 @@ self.addEventListener('offline', () => {
 
 // En el fetch event handler
 
+
+
 self.addEventListener('navigationpreload', (event) => {
     event.respondWith(
       fetch(event.request).catch(() => {

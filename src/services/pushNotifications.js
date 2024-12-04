@@ -186,29 +186,22 @@ const checkAndUpdateServiceWorker = async () => {
     try {
         const registration = await navigator.serviceWorker.ready;
         await registration.update();
-        return true;
+        console.log('Service Worker actualizado');
     } catch (error) {
-        console.error('Error al actualizar service worker:', error);
-        return false;
+        console.error('Error al actualizar Service Worker:', error);
     }
 };
 
+
 const checkSubscriptionStatus = async () => {
-    try {
-        const registration = await navigator.serviceWorker.ready;
-        const subscription = await registration.pushManager.getSubscription();
-        return {
-            isSubscribed: !!subscription,
-            subscription: subscription
-        };
-    } catch (error) {
-        console.error('Error al verificar estado de suscripción:', error);
-        return {
-            isSubscribed: false,
-            subscription: null
-        };
+    const registration = await navigator.serviceWorker.ready;
+    const subscription = await registration.pushManager.getSubscription();
+    if (!subscription) {
+        console.log('Suscripción no encontrada. Creando una nueva...');
+        await subscribeToPushNotifications();
     }
 };
+
 
 export {
     subscribeToPushNotifications,

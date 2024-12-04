@@ -4,6 +4,8 @@ import './StoreListComponent.css';
 import { useConnectivity } from '../../context/ConnectivityProvider';
 
 const StoreListComponent = () => {
+  const defaultLogo = "/images/default-logo.jpg"; // Logo por defecto
+
   const [stores, setStores] = useState([]);
   const [hoveredStoreId, setHoveredStoreId] = useState(null);
   const navigate = useNavigate();
@@ -150,13 +152,15 @@ const StoreListComponent = () => {
               onMouseEnter={() => setHoveredStoreId(store.ID_Tienda)}
               onMouseLeave={() => setHoveredStoreId(null)}
             >
-              {store.logo && (
-                <img
-                  src={`https://extravagant-back-1.onrender.com/uploads/${store.logo}`}
-                  alt={`${store.NombreTienda} logo`}
-                  className="store-logo"
-                />
-              )}
+              <img
+                src={store.logo ? `https://extravagant-back-1.onrender.com/uploads/${store.logo}` : defaultLogo}
+                alt={`${store.NombreTienda} logo`}
+                className="store-logo"
+                onError={(e) => {
+                  e.target.onerror = null; // Prevenir loop infinito
+                  e.target.src = defaultLogo;
+                }}
+              />
               <div className="store-details">
                 <h3 className="store-name">{store.NombreTienda}</h3>
                 <p className="store-description">{store.Descripcion}</p>

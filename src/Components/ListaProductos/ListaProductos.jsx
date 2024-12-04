@@ -65,7 +65,7 @@ const ListaProductos = () => {
 
         try {
             const response = await fetch(
-                `https://extravagant-back-1.onrender.com/productos/tienda?ID_Usuario=${userId}&ID_Tienda=${storeId}`,
+                `https://extravagant-back-1.onrender.com/productos/tienda?ID_Tienda=${storeId}`,
                 { headers: { 'Cache-Control': 'no-cache' } }
             );
             if (!response.ok) throw new Error('Error al obtener productos');

@@ -26,25 +26,25 @@ const broadcastConnectivityStatus = (isOnline) => {
 };
 
 self.addEventListener('install', (event) => {
-    console.log('Installing Service Worker...');
     event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
-            console.log('Cache abierto');
-            return cache.addAll(ASSETS_TO_CACHE);
-        })
+        caches.open(CACHE_NAME)
+            .then((cache) => cache.addAll(ASSETS_TO_CACHE))
+            .catch(error => console.error('Error en cache:', error))
     );
     self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
-    console.log('Service Worker: Activado');
     event.waitUntil(
         Promise.all([
             self.clients.claim(),
-            new Promise((resolve) => {
-                console.log('Verificando permisos de notificación');
-                console.log('Estado actual:', Notification.permission);
-                resolve();
+            // Limpiar caches antiguos
+            caches.keys().then(cacheNames => {
+                return Promise.all(
+                    cacheNames
+                        .filter(cacheName => cacheName !== CACHE_NAME)
+                        .map(cacheName => caches.delete(cacheName))
+                );
             })
         ])
     );
@@ -84,18 +84,19 @@ self.addEventListener('navigationpreload', (event) => {
   
 
   self.addEventListener('fetch', (event) => {
-    // Manejar las peticiones de API
+    // Ignorar peticiones a _next (archivos de Vercel)
+    if (event.request.url.includes('/_next/')) {
+        return;
+    }
+
+    // Manejar peticiones API
     if (event.request.url.includes('extravagant-back.vercel.app')) {
         event.respondWith(
             fetch(event.request)
-                .then(response => response)
-                .catch(error => {
-                    console.error('Error en petición API:', error);
-                    return new Response(JSON.stringify({ error: 'Error de red' }), {
-                        status: 503,
-                        headers: { 'Content-Type': 'application/json' }
-                    });
-                })
+                .catch(() => new Response(JSON.stringify({ error: 'Error de red' }), {
+                    status: 503,
+                    headers: { 'Content-Type': 'application/json' }
+                }))
         );
         return;
     }
@@ -103,22 +104,8 @@ self.addEventListener('navigationpreload', (event) => {
     // Para navegación SPA
     if (event.request.mode === 'navigate') {
         event.respondWith(
-            caches.match('/index.html')
-                .then(cachedResponse => {
-                    const networkFetch = fetch(event.request)
-                        .then(response => {
-                            // Actualizar el cache con la nueva versión
-                            if (response.ok) {
-                                caches.open(CACHE_NAME)
-                                    .then(cache => cache.put(event.request, response.clone()));
-                            }
-                            return response;
-                        })
-                        .catch(() => cachedResponse);
-                    
-                    // Responder inmediatamente con el cache mientras se actualiza en segundo plano
-                    return cachedResponse || networkFetch;
-                })
+            fetch(event.request)
+                .catch(() => caches.match('/index.html'))
         );
         return;
     }
@@ -128,16 +115,6 @@ self.addEventListener('navigationpreload', (event) => {
         caches.match(event.request)
             .then(cachedResponse => {
                 if (cachedResponse) {
-                    // Actualizar el cache en segundo plano
-                    fetch(event.request)
-                        .then(response => {
-                            if (response.ok) {
-                                caches.open(CACHE_NAME)
-                                    .then(cache => cache.put(event.request, response));
-                            }
-                        })
-                        .catch(() => {/* Ignorar errores de red */});
-                    
                     return cachedResponse;
                 }
 
@@ -147,16 +124,25 @@ self.addEventListener('navigationpreload', (event) => {
                             return response;
                         }
 
-                        caches.open(CACHE_NAME)
-                            .then(cache => cache.put(event.request, response.clone()));
+                        // Solo cachear recursos específicos
+                        if (
+                            event.request.url.endsWith('.css') ||
+                            event.request.url.endsWith('.js') ||
+                            event.request.url.endsWith('.png') ||
+                            event.request.url.endsWith('.jpg') ||
+                            event.request.url.endsWith('.svg')
+                        ) {
+                            const responseToCache = response.clone();
+                            caches.open(CACHE_NAME)
+                                .then(cache => cache.put(event.request, responseToCache))
+                                .catch(error => console.error('Error cacheando:', error));
+                        }
 
                         return response;
                     })
                     .catch(() => {
-                        if (event.request.destination === 'image' ||
-                            event.request.destination === 'font' ||
-                            event.request.destination === 'style') {
-                            return caches.match(event.request);
+                        if (event.request.destination === 'image') {
+                            return caches.match('/icon-192x192.png');
                         }
                         return new Response('Error de red', { status: 503 });
                     });

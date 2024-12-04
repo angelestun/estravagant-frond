@@ -17,6 +17,7 @@ const ListaProductos = () => {
   
   const userId = localStorage.getItem('userId');
   const storeId = localStorage.getItem('IdTienda');
+  const defaultImage = "/images/default-product.jpg";
 
   const syncPendingCartItems = async () => {
     try {
@@ -96,6 +97,7 @@ const ListaProductos = () => {
 
     return () => clearInterval(intervalId);
 }, [userId, storeId, isOnline]);
+
 const fetchOffers = async (products) => {
   try {
       const response = await fetch(`https://extravagant-back-1.onrender.com/oferta/tienda/${storeId}`);
@@ -132,7 +134,6 @@ const fetchOffers = async (products) => {
       setLoading(false);
   }
 };
-
 const findFeaturedOffers = (products) => {
   const offers = products.filter(product => product.Oferta);
   const discountOffers = offers.filter(product => product.Descuento > 0);
@@ -151,6 +152,7 @@ const findFeaturedOffers = (products) => {
   setFeaturedOffers(highlighted);
   setProducts(products);
 };
+
 const handleAddToCart = async (productId) => {
   const product = products.find(product => product.ID_Producto === productId);
   if (!product) return;
@@ -226,6 +228,7 @@ const formatPrice = (price) => {
 
 if (loading) return <div>Cargando...</div>;
 if (error) return <div>{error}</div>;
+
 return (
   <div className="lista-productos-container">
     {featuredOffers.length > 0 && (
@@ -238,11 +241,11 @@ return (
               onMouseEnter={() => setHoveredProductId(offer.ID_Producto)}
               onMouseLeave={() => setHoveredProductId(null)}>
               <img 
-                src={offer.Imagen?.startsWith('http') ? offer.Imagen : '/assets/placeholder.jpg'} 
+                src={offer.Imagen || defaultImage}
                 alt={offer.Nombre_Producto} 
                 className="imagen-producto"
                 onError={(e) => {
-                  e.target.src = '/assets/placeholder.jpg';
+                  e.target.src = defaultImage;
                 }}
               />
               <div className="detalles-producto">
@@ -290,11 +293,11 @@ return (
             onMouseEnter={() => setHoveredProductId(product.ID_Producto)}
             onMouseLeave={() => setHoveredProductId(null)}>
             <img 
-              src={product.Imagen?.startsWith('http') ? product.Imagen : '/assets/placeholder.jpg'} 
+              src={product.Imagen || defaultImage}
               alt={product.Nombre_Producto} 
               className="imagen-producto"
               onError={(e) => {
-                e.target.src = '/assets/placeholder.jpg';
+                e.target.src = defaultImage;
               }}
             />
             <div className="detalles-producto">
@@ -343,7 +346,10 @@ return (
     </div>
     {modalVisible && (
       <ProductPreviewModal 
-        product={selectedProduct} 
+        product={{
+          ...selectedProduct,
+          Imagen: selectedProduct.Imagen || defaultImage
+        }}
         onClose={closeModal} 
         handleAddToCart={handleAddToCart}
       />

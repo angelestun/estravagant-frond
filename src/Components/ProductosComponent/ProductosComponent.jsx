@@ -99,11 +99,23 @@ const ProductosComponent = () => {
   };
 
   const handleImageUrlChange = (e) => {
-    const url = e.target.value;
+    const url = e.target.value.trim();
+    
+    // Si la URL está vacía, limpiamos los campos de imagen
+    if (!url) {
+      setNuevoProducto({
+        ...nuevoProducto,
+        ImagenUrl: '',
+        Imagen: ''
+      });
+      setImagePreview(null);
+      setImageError({});
+      return;
+    }
     
     let processedUrl = url;
     if (url.includes('imgur.com')) {
-      processedUrl = url.replace('imgur.com', 'i.imgur.com');
+      processedUrl = url.replace(/(?:https?:\/\/)?(?:www\.)?imgur\.com/, 'https://i.imgur.com');
       if (!processedUrl.match(/\.(jpg|jpeg|png|gif)$/i)) {
         processedUrl += '.jpg';
       }
@@ -114,19 +126,26 @@ const ProductosComponent = () => {
       ImagenUrl: processedUrl,
       Imagen: processedUrl,
     });
-    setImagePreview(processedUrl);
 
-    if (url && !validateImgurUrl(processedUrl)) {
-      setNotificacion('Por favor, introduce una URL válida de Imgur');
-    } else {
-      setNotificacion('');
+    if (processedUrl) {
+      const img = new Image();
+      img.onload = () => {
+        setImagePreview(processedUrl);
+        setImageError(prev => ({...prev, [processedUrl]: false}));
+        setNotificacion('');
+      };
+      img.onerror = () => {
+        setImageError(prev => ({...prev, [processedUrl]: true}));
+        setNotificacion('La URL de la imagen no es válida o la imagen no está disponible');
+      };
+      img.src = processedUrl;
     }
   };
-
   const validarCampos = () => {
-    const { Nombre_Producto, Descripcion, Precio, Stock, Talla, Color, ImagenUrl, Categoria, Marca } = nuevoProducto;
-    if (!Nombre_Producto || !Descripcion || !Precio || !Stock || !Talla || !Color || !ImagenUrl || !Categoria || !Marca) {
-      alert('Por favor, completa todos los campos.');
+    const { Nombre_Producto, Descripcion, Precio, Stock, Talla, Color, Categoria, Marca } = nuevoProducto;
+    // Removemos ImagenUrl de la validación requerida
+    if (!Nombre_Producto || !Descripcion || !Precio || !Stock || !Talla || !Color || !Categoria || !Marca) {
+      alert('Por favor, completa todos los campos obligatorios.');
       return false;
     }
     if (Precio < 0 || Stock < 0) {
@@ -135,7 +154,6 @@ const ProductosComponent = () => {
     }
     return true;
   };
-
   const handleAgregarProducto = async (e) => {
     e.preventDefault();
     if (!isOnline) {
@@ -244,18 +262,29 @@ const ProductosComponent = () => {
   };
 
   const renderProductImage = (imageUrl) => {
+    if (!imageUrl) {
+      return (
+        <div className="h-20 w-20 bg-gray-200 rounded flex items-center justify-center">
+          <span className="text-gray-500 text-xs text-center">Sin imagen</span>
+        </div>
+      );
+    }
+
     return (
-      <img
-        src={imageUrl}
-        alt="Producto"
-        className="h-20 w-20 object-cover rounded"
-        onError={(e) => {
-          e.target.src = '/assets/placeholder.jpg';
-          console.error('Error al cargar la imagen:', imageUrl);
-        }}
-      />
+      <div className="relative">
+        <img
+          src={imageUrl}
+          alt="Producto"
+          className="h-20 w-20 object-cover rounded"
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = '/assets/placeholder.jpg';
+          }}
+        />
+      </div>
     );
   };
+
 
   const renderImagePreview = () => {
     if (!imagePreview) return null;

@@ -217,13 +217,13 @@ export default defineConfig({
           });
           
           proxy.on('proxyReq', (proxyReq) => {
-            proxyReq.setHeader('Origin', 'http://localhost:5173');
+            proxyReq.setHeader('Origin', 'https://extravagant-style.vercel.app/');
           });
         }
       }
     },
     cors: {
-      origin: ['http://localhost:3000', 'https://localhost:5173'],
+      origin: ['https://extravagant-back-1.onrender.com', 'https://extravagant-style.vercel.app/'],
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization', 'x-requested-time'],
       credentials: true

@@ -396,8 +396,8 @@ const Checkout = () => {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
                     },
-                    credentials: 'include',
-                    mode: 'cors',
+                    // // credentials: 'include',
+                    // mode: 'cors',
                     body: JSON.stringify({
                         total: finalTotal,
                         subtotal: orderSubtotal,
@@ -438,8 +438,8 @@ const Checkout = () => {
                                 headers: {
                                     'Content-Type': 'application/json'
                                 },
-                                credentials: 'include',
-                                mode: 'cors',
+                                // credentials: 'include',
+                                // mode: 'cors',
                                 body: JSON.stringify({
                                     couponCode,
                                     userId: userData,
@@ -459,8 +459,8 @@ const Checkout = () => {
                             console.log('Iniciando limpieza del carrito...');
                             const cartClearResponse = await fetch(`https://extravagant-back-1.onrender.com/carrito/clear/${userData}`, {
                                 method: 'DELETE',
-                                credentials: 'include',
-                                mode: 'cors'
+                                // credentials: 'include',
+                                // mode: 'cors'
                             });
                             
                             if (!cartClearResponse.ok) {
@@ -499,8 +499,8 @@ const Checkout = () => {
                             `https://extravagant-back-1.onrender.com/api/coupons/release/${couponCode}?userId=${userData}`,
                             { 
                                 method: 'DELETE',
-                                credentials: 'include',
-                                mode: 'cors'
+                                // credentials: 'include',
+                                // mode: 'cors'
                             }
                         );
                     } catch (releaseError) {

@@ -97,11 +97,12 @@ const ProductosComponent = () => {
     const url = e.target.value;
     setNuevoProducto({
       ...nuevoProducto,
-      ImagenUrl: url,
-      Imagen: url
+      ImagenUrl: url,  // Actualiza la URL de la imagen
+      Imagen: url,     // Asegura que la propiedad Imagen también reciba la URL
     });
-    setImagePreview(url);
+    setImagePreview(url); // Establece la vista previa de la imagen
   };
+  
 
   const validarCampos = () => {
     const { Nombre_Producto, Descripcion, Precio, Stock, Talla, Color, ImagenUrl, Categoria, Marca } = nuevoProducto;
@@ -119,29 +120,20 @@ const ProductosComponent = () => {
   const handleAgregarProducto = async (e) => {
     e.preventDefault();
     if (!isOnline) {
-      showNotification(
-        'Conexión Requerida',
-        'Se necesita conexión a Internet para agregar productos',
-        'warning'
-      );
+      showNotification('Conexión Requerida', 'Se necesita conexión a Internet para agregar productos', 'warning');
       return;
     }
     if (!validarCampos()) return;
-
+  
     try {
       const productData = {
         ...nuevoProducto,
         ID_Usuario: userData,
         ID_Tienda: idTienda,
       };
-
+  
       const response = await axios.post('https://extravagant-back-1.onrender.com/productos', productData);
-
-      setProductos(prevProductos => [
-        ...prevProductos,
-        { ...nuevoProducto, ID_Producto: response.data.id }
-      ]);
-
+      setProductos(prevProductos => [...prevProductos, { ...nuevoProducto, ID_Producto: response.data.id }]);
       handleCerrarModal();
       setNotificacion('Producto agregado con éxito.');
       obtenerProductos(); // Recargar productos
@@ -149,6 +141,7 @@ const ProductosComponent = () => {
       setNotificacion('Error al agregar producto: ' + (error.response ? error.response.data.error : 'Error de conexión.'));
     }
   };
+  
 
   const handleEditProducto = (producto) => {
     if (!isOnline) {
@@ -495,19 +488,20 @@ const ProductosComponent = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                     required
                   />
-                  {imagePreview && (
-                    <div className="mt-2">
-                      <img
-                        src={imagePreview}
-                        alt="Vista previa"
-                        className="h-32 w-32 object-cover rounded-lg border-2 border-purple-500"
-                        onError={(e) => {
-                          e.target.src = '/assets/placeholder.jpg';
-                          setImageError({...imageError, [nuevoProducto.ImagenUrl]: true});
-                        }}
-                      />
-                    </div>
-                  )}
+                    {imagePreview && (
+                      <div className="mt-2">
+                        <img
+                          src={imagePreview}  // Muestra la imagen en base a la URL ingresada
+                          alt="Vista previa"
+                          className="h-32 w-32 object-cover rounded-lg border-2 border-purple-500"
+                          onError={(e) => {
+                            e.target.src = '/assets/placeholder.jpg';  // Imagen predeterminada
+                            setImageError({...imageError, [nuevoProducto.ImagenUrl]: true});  // Registro del error
+                          }}
+                          
+                        />
+                      </div>
+                    )}
                 </div>
 
                 <button

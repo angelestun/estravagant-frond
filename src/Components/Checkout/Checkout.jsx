@@ -20,7 +20,6 @@ const Checkout = () => {
   const [totalDirectDiscount, setTotalDirectDiscount] = useState(0);
   const [discountAmount, setDiscountAmount] = useState('0.00');
   const userData = localStorage.getItem('userId');
-  const [notes, setNotes] = useState('');
   const { isOnline } = useConnectivity();
 
   useEffect(() => {
@@ -180,44 +179,44 @@ const Checkout = () => {
 
   const handleCreateOrder = async (paypalOrderId, finalTotal, discounts) => {
     const orderData = {
-      total: finalTotal,
-      subtotal: parseFloat(subtotal).toFixed(2),
-      couponCode: isCouponApplied ? couponCode : null,
-      products: cartItems.map(item => ({
-        ID_Producto: item.ID_Producto,
-        Cantidad: item.Cantidad,
-        Precio_Unitario: parseFloat(item.Precio).toFixed(2),
-      })),
-      paymentMethod: 'PayPal',
-      ID_Usuario: userData,
-      Monto_Descuento: parseFloat(discounts.couponDiscount).toFixed(2),
-      Monto_Oferta: parseFloat(discounts.offerDiscount).toFixed(2),
+        total: finalTotal,
+        subtotal: parseFloat(subtotal).toFixed(2),
+        couponCode: isCouponApplied ? couponCode : null,
+        products: cartItems.map(item => ({
+            ID_Producto: item.ID_Producto,
+            Cantidad: item.Cantidad,
+            Precio_Unitario: parseFloat(item.Precio).toFixed(2),
+        })),
+        paymentMethod: 'PayPal',
+        ID_Usuario: userData,
+        Monto_Descuento: parseFloat(discounts.couponDiscount).toFixed(2),
+        Monto_Oferta: parseFloat(discounts.offerDiscount).toFixed(2),
     };
-  
-    console.log('Datos de orden a enviar:', orderData);
-  
+
     try {
-      const response = await fetch('https://extravagant-back-1.onrender.com/api/create-order', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderData),
-      });
-  
-      const data = await response.json();
-      
-      if (!response.ok) {
-        console.error('Error Response:', data);
-        throw new Error(data.message || 'Error al crear el pedido');
-      }
-  
-      return data;
+        const response = await fetch('https://extravagant-back-1.onrender.com/api/create-order', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            credentials: 'include',
+            mode: 'cors',
+            body: JSON.stringify(orderData),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Error al crear el pedido');
+        }
+
+        const data = await response.json();
+        return data;
     } catch (error) {
-      console.error('Error en handleCreateOrder:', error);
-      throw error;
+        console.error('Error en handleCreateOrder:', error);
+        throw error;
     }
-  };
+};
 
   return (
     <div className="checkout">

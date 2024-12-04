@@ -16,7 +16,7 @@ const ListaProductos = () => {
   const { isOnline, showNotification } = useConnectivity();
   
   const userId = localStorage.getItem('userId');
-  const storeId = localStorage.getItem('idTienda');
+  const storeId = localStorage.getItem('IdTienda');
 
   const syncPendingCartItems = async () => {
     try {

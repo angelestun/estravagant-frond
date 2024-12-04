@@ -369,118 +369,78 @@ const Checkout = () => {
                 const orderData = await actions.order.capture();
                 console.log('PayPal Capture Response:', orderData);
         
+                // Preparar los datos para el backend
                 const savedCouponDiscount = parseFloat(Cookies.get('couponDiscount') || '0');
                 const orderSubtotal = Math.max(parseFloat(subtotal || 0), 0).toFixed(2);
                 const orderOfferDiscount = Math.max(parseFloat(totalDirectDiscount || 0), 0).toFixed(2);
                 const orderCouponDiscount = Math.max(parseFloat(savedCouponDiscount || 0), 0).toFixed(2);
-        
-                const finalTotal = Math.max(
-                    parseFloat(orderSubtotal) - 
-                    parseFloat(orderOfferDiscount) - 
-                    parseFloat(orderCouponDiscount),
-                    0.01
-                ).toFixed(2);
-        
-                console.log('Datos a enviar:', {
-                    paypalOrderId: orderData.id,
-                    finalTotal,
-                    discounts: {
-                        offerDiscount: orderOfferDiscount,
-                        couponDiscount: orderCouponDiscount
-                    }
+                const finalTotal = Math.max(parseFloat(orderSubtotal) - parseFloat(orderOfferDiscount) - parseFloat(orderCouponDiscount), 0.01).toFixed(2);
+                console.log('Datos a enviar:', { 
+                    paypalOrderId: orderData.id, 
+                    finalTotal, 
+                    discounts: { offerDiscount: orderOfferDiscount, couponDiscount: orderCouponDiscount } 
                 });
         
+                const data = {
+                    total: finalTotal,
+                    subtotal: orderSubtotal,
+                    couponCode: isCouponApplied ? couponCode : null,
+                    products: cartItems.map(item => ({
+                        ID_Producto: item.ID_Producto,
+                        Cantidad: item.Cantidad,
+                        Precio_Unitario: parseFloat(item.Precio).toFixed(2),
+                    })),
+                    paymentMethod: 'PayPal',
+                    ID_Usuario: userData,
+                    Monto_Descuento: orderCouponDiscount,
+                    Monto_Oferta: orderOfferDiscount,
+                };
+        
+                // Enviar los datos al backend
                 const response = await fetch('https://extravagant-back-1.onrender.com/api/create-order', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
                     },
-                    // // credentials: 'include',
-                    // mode: 'cors',
-                    body: JSON.stringify({
-                        total: finalTotal,
-                        subtotal: orderSubtotal,
-                        couponCode: isCouponApplied ? couponCode : null,
-                        products: cartItems.map(item => ({
-                            ID_Producto: item.ID_Producto,
-                            Cantidad: item.Cantidad,
-                            Precio_Unitario: parseFloat(item.Precio).toFixed(2),
-                        })),
-                        paymentMethod: 'PayPal',
-                        ID_Usuario: userData,
-                        Monto_Descuento: orderCouponDiscount,
-                        Monto_Oferta: orderOfferDiscount,
-                    })
+                    body: JSON.stringify(data),
+                    credentials: 'include', // Permitir el uso de cookies si es necesario
                 });
         
+                // Verificar si la respuesta es exitosa
                 if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || 'Error al crear el pedido');
+                    throw new Error(`Error en la respuesta del servidor: ${response.statusText}`);
                 }
         
-                const responseData = await response.json();
+                // Verificar si la respuesta es JSON válida
+                let responseData;
+                try {
+                    responseData = await response.json();
+                } catch (error) {
+                    throw new Error('Error al parsear la respuesta JSON');
+                }
+        
                 console.log('Respuesta del servidor:', responseData);
         
                 if (responseData && responseData.orderId) {
                     console.log('Orden creada exitosamente, ID:', responseData.orderId);
-                    
+        
+                    // Continuar con la lógica post-pago, como limpiar el carrito y redirigir
                     try {
-                        if (couponCode) {
-                            console.log('Intentando mover cupón:', {
-                                couponCode,
-                                userId: userData,
-                                orderId: responseData.orderId
-                            });
-        
-                            const moveResponse = await fetch('https://extravagant-back-1.onrender.com/api/coupons/move-to-used', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                // credentials: 'include',
-                                // mode: 'cors',
-                                body: JSON.stringify({
-                                    couponCode,
-                                    userId: userData,
-                                    orderId: responseData.orderId
-                                })
-                            });
-        
-                            const moveResult = await moveResponse.json();
-                            console.log('Respuesta del servidor al mover cupón:', moveResult);
-        
-                            if (!moveResponse.ok) {
-                                console.error('Error al mover el cupón:', moveResult);
-                            }
+                        // Limpiar carrito y otras acciones
+                        const cartClearResponse = await fetch(`https://extravagant-back-1.onrender.com/carrito/clear/${userData}`, { method: 'DELETE' });
+                        if (!cartClearResponse.ok) {
+                            throw new Error('Error al limpiar el carrito');
                         }
         
-                        try {
-                            console.log('Iniciando limpieza del carrito...');
-                            const cartClearResponse = await fetch(`https://extravagant-back-1.onrender.com/carrito/clear/${userData}`, {
-                                method: 'DELETE',
-                                // credentials: 'include',
-                                // mode: 'cors'
-                            });
-                            
-                            if (!cartClearResponse.ok) {
-                                throw new Error('Error al limpiar el carrito');
-                            }
-        
-                            console.log('Limpiando cookies y localStorage...');
-                            Cookies.remove('couponInfo');
-                            Cookies.remove('couponDiscount');
-                            Cookies.remove('couponCode');
-                            Cookies.remove('couponStoreId');
-                            localStorage.removeItem('cart');
-                            localStorage.removeItem('cartTimestamp');
-        
-                            console.log('Limpieza completada exitosamente');
-                        } catch (cleanupError) {
-                            console.error('Error en la limpieza:', cleanupError);
-                        }
-        
+                        Cookies.remove('couponInfo');
+                        Cookies.remove('couponDiscount');
+                        Cookies.remove('couponCode');
+                        Cookies.remove('couponStoreId');
+                        localStorage.removeItem('cart');
+                        localStorage.removeItem('cartTimestamp');
                         alert('¡Pago realizado con éxito!');
+        
                         console.log('Redirigiendo a:', `/confirmacion/${responseData.orderId}`);
                         await navigateWithFallback(`/confirmacion/${responseData.orderId}`);
                     } catch (error) {
@@ -492,25 +452,10 @@ const Checkout = () => {
                 }
             } catch (error) {
                 console.error('Error completo en onApprove:', error);
-                
-                if (couponCode) {
-                    try {
-                        await fetch(
-                            `https://extravagant-back-1.onrender.com/api/coupons/release/${couponCode}?userId=${userData}`,
-                            { 
-                                method: 'DELETE',
-                                // credentials: 'include',
-                                // mode: 'cors'
-                            }
-                        );
-                    } catch (releaseError) {
-                        console.error('Error al liberar cupón:', releaseError);
-                    }
-                }
-                
                 alert(error.message || "Error al procesar el pago. Por favor, intenta nuevamente.");
             }
         }}
+        
           onError={(err) => {
             console.error('PayPal Error:', err);
             if (isCouponApplied && couponCode) {

@@ -17,7 +17,7 @@ const ListaProductos = () => {
   
   const userId = localStorage.getItem('userId');
   const storeId = localStorage.getItem('IdTienda');
-  const defaultImage = "/images/default-product.jpg";
+  const defaultImage = "/images/default-product.png";
 
   const syncPendingCartItems = async () => {
     try {

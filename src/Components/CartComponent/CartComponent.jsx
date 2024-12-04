@@ -9,7 +9,7 @@ import { useConnectivity } from '../../context/ConnectivityProvider';
 
 const CartComponent = ({ cartItems, setCartItems }) => {
 
-    const defaultImage = "/images/default-product.jpg"; 
+    const defaultImage = "/images/default-product.png"; 
     
 
     const { isOnline, showNotification } = useConnectivity();  

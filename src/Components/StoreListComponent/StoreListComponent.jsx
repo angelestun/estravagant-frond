@@ -4,7 +4,7 @@ import './StoreListComponent.css';
 import { useConnectivity } from '../../context/ConnectivityProvider';
 
 const StoreListComponent = () => {
-  const defaultLogo = "/images/default-logo.jpg"; // Logo por defecto
+  const defaultLogo = "/images/default-logo.png"; // Logo por defecto
 
   const [stores, setStores] = useState([]);
   const [hoveredStoreId, setHoveredStoreId] = useState(null);

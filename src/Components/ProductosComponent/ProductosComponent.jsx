@@ -34,6 +34,11 @@ const ProductosComponent = () => {
   const [notificacion, setNotificacion] = useState('');
   const [imagePreview, setImagePreview] = useState(null);
 
+  const validateImgurUrl = (url) => {
+    const imgurRegex = /^https?:\/\/(?:i\.)?imgur\.com\/[a-zA-Z0-9]{7}(?:\.[a-zA-Z]{3,4})?$/;
+    return imgurRegex.test(url);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       await fetchIdTienda();
@@ -95,14 +100,28 @@ const ProductosComponent = () => {
 
   const handleImageUrlChange = (e) => {
     const url = e.target.value;
+    
+    let processedUrl = url;
+    if (url.includes('imgur.com')) {
+      processedUrl = url.replace('imgur.com', 'i.imgur.com');
+      if (!processedUrl.match(/\.(jpg|jpeg|png|gif)$/i)) {
+        processedUrl += '.jpg';
+      }
+    }
+
     setNuevoProducto({
       ...nuevoProducto,
-      ImagenUrl: url,  // Actualiza la URL de la imagen
-      Imagen: url,     // Asegura que la propiedad Imagen también reciba la URL
+      ImagenUrl: processedUrl,
+      Imagen: processedUrl,
     });
-    setImagePreview(url); // Establece la vista previa de la imagen
+    setImagePreview(processedUrl);
+
+    if (url && !validateImgurUrl(processedUrl)) {
+      setNotificacion('Por favor, introduce una URL válida de Imgur');
+    } else {
+      setNotificacion('');
+    }
   };
-  
 
   const validarCampos = () => {
     const { Nombre_Producto, Descripcion, Precio, Stock, Talla, Color, ImagenUrl, Categoria, Marca } = nuevoProducto;
@@ -123,26 +142,31 @@ const ProductosComponent = () => {
       showNotification('Conexión Requerida', 'Se necesita conexión a Internet para agregar productos', 'warning');
       return;
     }
+    
+    if (!validateImgurUrl(nuevoProducto.ImagenUrl)) {
+      setNotificacion('Por favor, utiliza una URL válida de Imgur para la imagen');
+      return;
+    }
+    
     if (!validarCampos()) return;
-  
+
     try {
       const productData = {
         ...nuevoProducto,
         ID_Usuario: userData,
         ID_Tienda: idTienda,
+        Imagen: nuevoProducto.ImagenUrl,
       };
-  
+
       const response = await axios.post('https://extravagant-back-1.onrender.com/productos', productData);
       setProductos(prevProductos => [...prevProductos, { ...nuevoProducto, ID_Producto: response.data.id }]);
       handleCerrarModal();
       setNotificacion('Producto agregado con éxito.');
-      obtenerProductos(); // Recargar productos
+      obtenerProductos();
     } catch (error) {
       setNotificacion('Error al agregar producto: ' + (error.response ? error.response.data.error : 'Error de conexión.'));
     }
   };
-  
-
   const handleEditProducto = (producto) => {
     if (!isOnline) {
       showNotification(
@@ -164,6 +188,10 @@ const ProductosComponent = () => {
 
   const handleActualizarProducto = async (e) => {
     e.preventDefault();
+    if (!validateImgurUrl(nuevoProducto.ImagenUrl)) {
+      setNotificacion('Por favor, utiliza una URL válida de Imgur para la imagen');
+      return;
+    }
     if (!validarCampos()) return;
 
     try {
@@ -180,11 +208,12 @@ const ProductosComponent = () => {
 
       handleCerrarModal();
       setNotificacion('Producto actualizado con éxito.');
-      obtenerProductos(); // Recargar productos
+      obtenerProductos();
     } catch (error) {
       setNotificacion('Error al actualizar producto: ' + (error.response ? error.response.data.error : 'Error de conexión.'));
     }
   };
+
   const handleEliminarProducto = async (id) => {
     if (!isOnline) {
       showNotification(
@@ -212,6 +241,43 @@ const ProductosComponent = () => {
     setIsEditMode(false);
     setCurrentProducto(null);
     setImagePreview(null);
+  };
+
+  const renderProductImage = (imageUrl) => {
+    return (
+      <img
+        src={imageUrl}
+        alt="Producto"
+        className="h-20 w-20 object-cover rounded"
+        onError={(e) => {
+          e.target.src = '/assets/placeholder.jpg';
+          console.error('Error al cargar la imagen:', imageUrl);
+        }}
+      />
+    );
+  };
+
+  const renderImagePreview = () => {
+    if (!imagePreview) return null;
+
+    return (
+      <div className="mt-2">
+        <img
+          src={imagePreview}
+          alt="Vista previa"
+          className="h-32 w-32 object-cover rounded-lg border-2 border-purple-500"
+          onError={(e) => {
+            e.target.src = '/assets/placeholder.jpg';
+            setImageError({...imageError, [nuevoProducto.ImagenUrl]: true});
+          }}
+        />
+        {!validateImgurUrl(imagePreview) && (
+          <p className="text-red-500 text-sm mt-1">
+            Por favor, utiliza una URL válida de Imgur (ejemplo: https://i.imgur.com/abcdef.jpg)
+          </p>
+        )}
+      </div>
+    );
   };
 
   const productosFiltrados = productos.filter(producto =>
@@ -296,14 +362,7 @@ const ProductosComponent = () => {
                   <td className="px-6 py-4 whitespace-nowrap">{producto.Categoria}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{producto.Marca}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <img
-                      src={producto.Imagen}
-                      alt="Producto"
-                      className="h-20 w-20 object-cover rounded"
-                      onError={(e) => {
-                        e.target.src = '/assets/placeholder.jpg';
-                      }}
-                    />
+                    {renderProductImage(producto.Imagen)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap space-x-2">
                     <button 
@@ -477,31 +536,18 @@ const ProductosComponent = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    URL de Imagen
+                    URL de Imagen (Imgur)
                   </label>
                   <input
                     type="text"
                     name="ImagenUrl"
                     value={nuevoProducto.ImagenUrl}
                     onChange={handleImageUrlChange}
-                    placeholder="https://ejemplo.com/imagen.jpg"
+                    placeholder="https://i.imgur.com/ejemplo.jpg"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                     required
                   />
-                    {imagePreview && (
-                      <div className="mt-2">
-                        <img
-                          src={imagePreview}  // Muestra la imagen en base a la URL ingresada
-                          alt="Vista previa"
-                          className="h-32 w-32 object-cover rounded-lg border-2 border-purple-500"
-                          onError={(e) => {
-                            e.target.src = '/assets/placeholder.jpg';  // Imagen predeterminada
-                            setImageError({...imageError, [nuevoProducto.ImagenUrl]: true});  // Registro del error
-                          }}
-                          
-                        />
-                      </div>
-                    )}
+                  {renderImagePreview()}
                 </div>
 
                 <button

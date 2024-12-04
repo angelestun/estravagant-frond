@@ -83,24 +83,8 @@ self.addEventListener('navigationpreload', (event) => {
   });
   
 
-self.addEventListener('fetch', (event) => {
-    if (event.request.method === 'HEAD' && event.request.url.includes('extravagant-style.vercel.app')) {
-        event.respondWith(
-            new Response(null, {
-                status: 200,
-                statusText: 'OK'
-            })
-        );
-        return;
-    }
-    
-    const currentOnlineStatus = navigator.onLine;
-    if (currentOnlineStatus !== lastOnlineStatus) {
-        lastOnlineStatus = currentOnlineStatus;
-        broadcastConnectivityStatus(currentOnlineStatus);
-    }
-
-    // Manejar las peticiones de API de manera diferente
+  self.addEventListener('fetch', (event) => {
+    // Manejar las peticiones de API
     if (event.request.url.includes('extravagant-back.vercel.app')) {
         event.respondWith(
             fetch(event.request)
@@ -119,36 +103,52 @@ self.addEventListener('fetch', (event) => {
     // Para navegación SPA
     if (event.request.mode === 'navigate') {
         event.respondWith(
-            fetch(event.request)
-                .catch(() => {
-                    if (!navigator.onLine) {
-                        return caches.match(OFFLINE_URL);
-                    }
-                    // Si la ruta no existe, redirigir al index.html
-                    return caches.match('/index.html');
+            caches.match('/index.html')
+                .then(cachedResponse => {
+                    const networkFetch = fetch(event.request)
+                        .then(response => {
+                            // Actualizar el cache con la nueva versión
+                            if (response.ok) {
+                                caches.open(CACHE_NAME)
+                                    .then(cache => cache.put(event.request, response.clone()));
+                            }
+                            return response;
+                        })
+                        .catch(() => cachedResponse);
+                    
+                    // Responder inmediatamente con el cache mientras se actualiza en segundo plano
+                    return cachedResponse || networkFetch;
                 })
         );
         return;
     }
 
-    // Para otros recursos
+    // Para recursos estáticos
     event.respondWith(
         caches.match(event.request)
-            .then((cachedResponse) => {
+            .then(cachedResponse => {
                 if (cachedResponse) {
+                    // Actualizar el cache en segundo plano
+                    fetch(event.request)
+                        .then(response => {
+                            if (response.ok) {
+                                caches.open(CACHE_NAME)
+                                    .then(cache => cache.put(event.request, response));
+                            }
+                        })
+                        .catch(() => {/* Ignorar errores de red */});
+                    
                     return cachedResponse;
                 }
 
                 return fetch(event.request)
-                    .then((response) => {
-                        if (!response || response.status !== 200 || response.type !== 'basic') {
+                    .then(response => {
+                        if (!response || response.status !== 200) {
                             return response;
                         }
 
-                        const responseToCache = response.clone();
-                        caches.open(CACHE_NAME).then((cache) => {
-                            cache.put(event.request, responseToCache);
-                        });
+                        caches.open(CACHE_NAME)
+                            .then(cache => cache.put(event.request, response.clone()));
 
                         return response;
                     })
@@ -158,10 +158,7 @@ self.addEventListener('fetch', (event) => {
                             event.request.destination === 'style') {
                             return caches.match(event.request);
                         }
-                        return new Response('Error de red, por favor verifica tu conexión.', {
-                            status: 503,
-                            statusText: 'Service Unavailable',
-                        });
+                        return new Response('Error de red', { status: 503 });
                     });
             })
     );

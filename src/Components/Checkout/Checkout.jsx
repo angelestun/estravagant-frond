@@ -177,52 +177,6 @@ const Checkout = () => {
     });
   };
 
-//   const handleCreateOrder = async (paypalOrderId, finalTotal, discounts) => {
-//     const orderData = {
-//         total: finalTotal,
-//         subtotal: parseFloat(subtotal).toFixed(2),
-//         couponCode: isCouponApplied ? couponCode : null,
-//         products: cartItems.map(item => ({
-//             ID_Producto: item.ID_Producto,
-//             Cantidad: item.Cantidad,
-//             Precio_Unitario: parseFloat(item.Precio).toFixed(2),
-//         })),
-//         paymentMethod: 'PayPal',
-//         ID_Usuario: userData,
-//         Monto_Descuento: parseFloat(discounts.couponDiscount).toFixed(2),
-//         Monto_Oferta: parseFloat(discounts.offerDiscount).toFixed(2),
-//     };
-
-//     try {
-//         console.log('Enviando orderData:', orderData);
-        
-//         const response = await fetch('https://extravagant-back-1.onrender.com/api/create-order', {
-//             method: 'POST',
-//             headers: {
-//                 'Content-Type': 'application/json',
-//                 'Accept': 'application/json'
-//             },
-//             credentials: 'include', // Asegúrate de que esto esté configurado
-//             mode: 'cors', // Añade esto explícitamente
-//             body: JSON.stringify(orderData),
-//         });
-
-//         if (!response.ok) {
-//             const errorData = await response.json();
-//             console.error('Error response:', errorData);
-//             throw new Error(errorData.message || 'Error al crear el pedido');
-//         }
-
-//         const data = await response.json();
-//         console.log('Respuesta exitosa:', data);
-//         return data;
-//     } catch (error) {
-//         console.error('Error detallado en handleCreateOrder:', error);
-//         console.error('Stack trace:', error.stack);
-//         throw error;
-//     }
-// };
-
   return (
     <div className="checkout">
       <div className="order-summary">
@@ -404,7 +358,7 @@ const Checkout = () => {
                         'Accept': 'application/json',
                     },
                     body: JSON.stringify(data),
-                    // credentials: 'include', // Permitir el uso de cookies si es necesario
+                    credentials: 'include', // Permitir el uso de cookies si es necesario
                 });
         
                 // Verificar si la respuesta es exitosa

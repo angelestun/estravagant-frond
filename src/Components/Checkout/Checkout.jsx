@@ -331,21 +331,30 @@ const Checkout = () => {
                 const finalTotal = Math.max(parseFloat(orderSubtotal) - parseFloat(orderOfferDiscount) - parseFloat(orderCouponDiscount), 0.01).toFixed(2);
         
                 // Crear objeto con los detalles del pedido
+// En el onApprove del Checkout, al crear orderDetails:
                 const orderDetails = {
-                    total: finalTotal,
-                    subtotal: orderSubtotal,
-                    metodo_pago: 'PayPal',
-                    monto_descuento: orderCouponDiscount,
-                    monto_oferta: orderOfferDiscount,
-                    products: cartItems.map(item => ({
-                        Nombre_Producto: item.Nombre_Producto,
-                        NombreTienda: item.NombreTienda,
-                        Cantidad: item.Cantidad,
-                        Precio_Unitario: parseFloat(item.Precio),
-                    })),
-                    fecha_pedido: new Date().toISOString()
+                  total: finalTotal,
+                  subtotal: orderSubtotal,
+                  metodo_pago: 'PayPal',
+                  monto_descuento: orderCouponDiscount > 0 ? orderCouponDiscount : null,
+                  monto_oferta: orderOfferDiscount > 0 ? orderOfferDiscount : null,
+                  products: cartItems.map(item => ({
+                      Nombre_Producto: item.Nombre_Producto,
+                      NombreTienda: item.NombreTienda,
+                      Cantidad: item.Cantidad,
+                      Precio_Unitario: parseFloat(item.Precio),
+                  })),
+                  // Guardar la fecha exacta del momento de la compra
+                  fecha_pedido: new Date().toLocaleString('es-MX', {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      second: '2-digit',
+                      hour12: false
+                  })
                 };
-        
                 // Limpiar carrito y cookies
                 Cookies.remove('couponInfo');
                 Cookies.remove('couponDiscount');

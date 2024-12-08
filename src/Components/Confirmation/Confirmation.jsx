@@ -1,44 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import './Confirmation.css';
 
 const Confirmation = () => {
     const { orderId } = useParams();
-    const location = useLocation();
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        // Verificar si tenemos los datos en el state de la navegación
-        if (location.state?.orderDetails) {
-            setOrder(location.state.orderDetails);
-            setLoading(false);
-        } else if (!orderId.includes('TEMP-') && !orderId.includes('ERROR-')) {
-            // Solo intentar fetch si no es un ID temporal
-            const fetchOrder = async () => {
-                try {
-                    const response = await fetch(`https://extravagant-back-1.onrender.com/api/order/${orderId}`);
-                    if (!response.ok) {
-                        throw new Error('Error al obtener el pedido');
-                    }
-                    const data = await response.json();
-                    setOrder(data);
-                } catch (err) {
-                    console.error('Error al obtener el pedido:', err);
-                    // No mostrar error si tenemos datos en el state
-                    if (!location.state?.orderDetails) {
-                        setError(err.message);
-                    }
-                } finally {
-                    setLoading(false);
-                }
-            };
-            fetchOrder();
+        const searchParams = new URLSearchParams(window.location.search);
+        const orderData = searchParams.get('data');
+        
+        if (orderData) {
+            try {
+                const decodedData = JSON.parse(decodeURIComponent(orderData));
+                setOrder(decodedData);
+            } catch (err) {
+                console.error('Error al decodificar datos:', err);
+                setError('Error al procesar los datos del pedido');
+            }
+        } else {
+            setError('No se encontraron datos del pedido');
         }
-    }, [orderId, location.state]);
+        setLoading(false);
+    }, []);
 
     const downloadTicket = () => {
         if (!order) return;
@@ -46,6 +34,7 @@ const Confirmation = () => {
         const doc = new jsPDF();
         doc.setFont('Helvetica', 'normal');
     
+        // Encabezado
         doc.setFontSize(20);
         doc.setTextColor(0, 102, 204);
         doc.text('Extravagant Style', 20, 20);
@@ -54,18 +43,21 @@ const Confirmation = () => {
         doc.setTextColor(0, 0, 0);
         doc.text('¡Gracias por tu compra!', 20, 30);
 
+        // Línea divisoria
         doc.setLineWidth(0.5);
         doc.line(20, 35, 190, 35);
 
+        // Información del pedido
         doc.setFontSize(10);
         doc.text(`ID de pedido: ${orderId}`, 20, 40);
         doc.text(`Fecha y hora: ${new Date().toLocaleString()}`, 20, 45);
-        doc.text(`Método de pago: ${order.metodo_pago || 'PayPal'}`, 20, 50);
+        doc.text(`Método de pago: PayPal`, 20, 50);
         doc.text(`Estado de pago: Completado`, 20, 55);
     
         doc.setLineWidth(0.5);
         doc.line(20, 60, 190, 60);
 
+        // Tabla de productos
         if (order.products && order.products.length > 0) {
             doc.setFontSize(12);
             doc.autoTable({
@@ -86,13 +78,13 @@ const Confirmation = () => {
     
         let yOffset = doc.lastAutoTable ? doc.lastAutoTable.finalY + 10 : 75;
         
-        if (order.monto_descuento || order.monto_oferta) {
-            doc.text(`Descuento por cupón: -$${order.monto_descuento || '0.00'}`, 20, yOffset);
-            yOffset += 5;
-            doc.text(`Descuento por oferta: -$${order.monto_oferta || '0.00'}`, 20, yOffset);
-            yOffset += 10;
-        }
+        // Descuentos
+        doc.setFontSize(12);
+        doc.text(`Descuento por cupón: -$${order.monto_descuento || '0.00'}`, 20, yOffset);
+        yOffset += 5;
+        doc.text(`Descuento por oferta: -$${order.monto_oferta || '0.00'}`, 20, yOffset);
         
+        yOffset += 10;
         doc.setFontSize(14);
         doc.text(`Monto Total: $${parseFloat(order.total).toFixed(2)}`, 20, yOffset);
         
@@ -110,7 +102,7 @@ const Confirmation = () => {
             <div className="order-details">
                 <p>ID de pedido: <strong>{orderId}</strong></p>
                 <p>Fecha y hora: <strong>{new Date().toLocaleString()}</strong></p>
-                <p>Método de pago: <strong>{order.metodo_pago || 'PayPal'}</strong></p>
+                <p>Método de pago: <strong>PayPal</strong></p>
                 <p>Estado de pago: <strong>Completado</strong></p>
                 
                 <h3>Productos</h3>
@@ -154,12 +146,8 @@ const Confirmation = () => {
                 </div>
 
                 <div className="order-summary">
-                    {order.monto_descuento > 0 && (
-                        <p>Descuento por cupón: -${order.monto_descuento}</p>
-                    )}
-                    {order.monto_oferta > 0 && (
-                        <p>Descuento por oferta: -${order.monto_oferta}</p>
-                    )}
+                    <p>Descuento por cupón: -${order.monto_descuento || '0.00'}</p>
+                    <p>Descuento por oferta: -${order.monto_oferta || '0.00'}</p>
                     <h3>Monto Total: <strong>${parseFloat(order.total).toFixed(2)}</strong></h3>
                 </div>
             </div>

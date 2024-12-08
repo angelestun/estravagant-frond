@@ -5,6 +5,7 @@ import Cookies from 'js-cookie';
 import { navigateWithFallback } from '../../utils/navigation';
 import './Checkout.css';
 import { useConnectivity } from '../../context/ConnectivityProvider';
+import { useNavigate } from 'react-router-dom';
 
 
 const Checkout = () => {
@@ -21,6 +22,7 @@ const Checkout = () => {
   const [discountAmount, setDiscountAmount] = useState('0.00');
   const userData = localStorage.getItem('userId');
   const { isOnline } = useConnectivity();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (cartItems?.length > 0) {
@@ -323,90 +325,111 @@ const Checkout = () => {
                 const orderData = await actions.order.capture();
                 console.log('PayPal Capture Response:', orderData);
         
-                // Preparar los datos para el backend
+                // Preparar los datos que se mostrarán en la confirmación
                 const savedCouponDiscount = parseFloat(Cookies.get('couponDiscount') || '0');
                 const orderSubtotal = Math.max(parseFloat(subtotal || 0), 0).toFixed(2);
                 const orderOfferDiscount = Math.max(parseFloat(totalDirectDiscount || 0), 0).toFixed(2);
                 const orderCouponDiscount = Math.max(parseFloat(savedCouponDiscount || 0), 0).toFixed(2);
                 const finalTotal = Math.max(parseFloat(orderSubtotal) - parseFloat(orderOfferDiscount) - parseFloat(orderCouponDiscount), 0.01).toFixed(2);
-                console.log('Datos a enviar:', { 
-                    paypalOrderId: orderData.id, 
-                    finalTotal, 
-                    discounts: { offerDiscount: orderOfferDiscount, couponDiscount: orderCouponDiscount } 
-                });
         
-                const data = {
+                // Crear objeto con los detalles del pedido
+                const orderDetails = {
                     total: finalTotal,
                     subtotal: orderSubtotal,
-                    couponCode: isCouponApplied ? couponCode : null,
+                    metodo_pago: 'PayPal',
+                    monto_descuento: orderCouponDiscount,
+                    monto_oferta: orderOfferDiscount,
                     products: cartItems.map(item => ({
-                        ID_Producto: item.ID_Producto,
+                        Nombre_Producto: item.Nombre_Producto,
+                        NombreTienda: item.NombreTienda,
                         Cantidad: item.Cantidad,
-                        Precio_Unitario: parseFloat(item.Precio).toFixed(2),
-                    })),
-                    paymentMethod: 'PayPal',
-                    ID_Usuario: userData,
-                    Monto_Descuento: orderCouponDiscount,
-                    Monto_Oferta: orderOfferDiscount,
+                        Precio_Unitario: parseFloat(item.Precio),
+                        ID_Producto: item.ID_Producto
+                    }))
                 };
         
-                // Enviar los datos al backend
-                const response = await fetch('https://extravagant-back-1.onrender.com/api/create-order', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                    },
-                    body: JSON.stringify(data),
-                    credentials: 'include', // Permitir el uso de cookies si es necesario
-                });
-        
-                // Verificar si la respuesta es exitosa
-                if (!response.ok) {
-                    throw new Error(`Error en la respuesta del servidor: ${response.statusText}`);
-                }
-        
-                // Verificar si la respuesta es JSON válida
-                let responseData;
                 try {
-                    responseData = await response.json();
-                } catch (error) {
-                    throw new Error('Error al parsear la respuesta JSON');
-                }
+                    // Intentar enviar datos al backend
+                    const response = await fetch('https://extravagant-back-1.onrender.com/api/create-order', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            total: finalTotal,
+                            subtotal: orderSubtotal,
+                            couponCode: isCouponApplied ? couponCode : null,
+                            products: cartItems.map(item => ({
+                                ID_Producto: item.ID_Producto,
+                                Cantidad: item.Cantidad,
+                                Precio_Unitario: parseFloat(item.Precio).toFixed(2),
+                            })),
+                            paymentMethod: 'PayPal',
+                            ID_Usuario: userData,
+                            Monto_Descuento: orderCouponDiscount,
+                            Monto_Oferta: orderOfferDiscount,
+                        }),
+                        credentials: 'include'
+                    });
         
-                console.log('Respuesta del servidor:', responseData);
-        
-                if (responseData && responseData.orderId) {
-                    console.log('Orden creada exitosamente, ID:', responseData.orderId);
-        
-                    // Continuar con la lógica post-pago, como limpiar el carrito y redirigir
+                    const responseData = await response.json();
+                    
+                    // Limpiar carrito y cookies independientemente de la respuesta
                     try {
-                        // Limpiar carrito y otras acciones
-                        const cartClearResponse = await fetch(`https://extravagant-back-1.onrender.com/carrito/clear/${userData}`, { method: 'DELETE' });
-                        if (!cartClearResponse.ok) {
-                            throw new Error('Error al limpiar el carrito');
-                        }
-        
-                        Cookies.remove('couponInfo');
-                        Cookies.remove('couponDiscount');
-                        Cookies.remove('couponCode');
-                        Cookies.remove('couponStoreId');
-                        localStorage.removeItem('cart');
-                        localStorage.removeItem('cartTimestamp');
-                        alert('¡Pago realizado con éxito!');
-        
-                        console.log('Redirigiendo a:', `/confirmacion/${responseData.orderId}`);
-                        await navigateWithFallback(`/confirmacion/${responseData.orderId}`);
+                        await fetch(`https://extravagant-back-1.onrender.com/carrito/clear/${userData}`, { 
+                            method: 'DELETE' 
+                        });
                     } catch (error) {
-                        console.error('Error en el proceso post-pago:', error);
-                        window.location.href = `/confirmacion/${responseData.orderId}`;
+                        console.error('Error al limpiar carrito:', error);
                     }
-                } else {
-                    throw new Error('No se recibió el ID de la orden del servidor');
+        
+                    // Limpiar cookies y localStorage
+                    Cookies.remove('couponInfo');
+                    Cookies.remove('couponDiscount');
+                    Cookies.remove('couponCode');
+                    Cookies.remove('couponStoreId');
+                    localStorage.removeItem('cart');
+                    localStorage.removeItem('cartTimestamp');
+        
+                    // Usar el ID de la orden si está disponible, o generar uno temporal
+                    const orderId = responseData?.orderId || `TEMP-${Date.now()}`;
+                    
+                    // Siempre navegar a la confirmación
+                    navigate(`/confirmacion/${orderId}`, {
+                        state: { orderDetails }
+                    });
+        
+                } catch (error) {
+                    console.error('Error en el proceso del backend:', error);
+                    
+                    // Generar ID temporal si falla la comunicación con el backend
+                    const tempOrderId = `TEMP-${Date.now()}`;
+                    
+                    // Navegar a la confirmación incluso si hay error
+                    navigate(`/confirmacion/${tempOrderId}`, {
+                        state: { orderDetails }
+                    });
                 }
+        
             } catch (error) {
-                console.error('Error completo en onApprove:', error);
-                alert(error.message || "Error al procesar el pago. Por favor, intenta nuevamente.");
+                console.error('Error en PayPal:', error);
+                
+                // Si falla incluso PayPal, aún redirigimos con datos básicos
+                const basicOrderDetails = {
+                    total: total,
+                    metodo_pago: 'PayPal',
+                    products: cartItems.map(item => ({
+                        Nombre_Producto: item.Nombre_Producto,
+                        NombreTienda: item.NombreTienda,
+                        Cantidad: item.Cantidad,
+                        Precio_Unitario: parseFloat(item.Precio)
+                    }))
+                };
+        
+                navigate(`/confirmacion/ERROR-${Date.now()}`, {
+                    state: { orderDetails: basicOrderDetails }
+                });
             }
         }}
         

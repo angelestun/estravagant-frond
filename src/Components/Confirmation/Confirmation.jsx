@@ -87,6 +87,13 @@ const Confirmation = () => {
         yOffset += 10;
         doc.setFontSize(14);
         doc.text(`Monto Total: $${parseFloat(order.total).toFixed(2)}`, 20, yOffset);
+
+        doc.setLineWidth(0.5);
+        doc.line(20, yOffset + 10, 190, yOffset + 10);
+
+        
+        doc.setFontSize(8);
+        doc.text('¡Gracias por elegirnos! Si tienes alguna pregunta, contáctanos a soporte@extravagantstyle.com', 20, yOffset + 20);
         
         doc.save('confirmación-de-compra.pdf');
     };
@@ -100,7 +107,7 @@ const Confirmation = () => {
             <h1 className='tittle-con'>¡Gracias por tu compra!</h1>
             <h2 className='sub-con'>Detalles de tu pedido</h2>
             <div className="order-details">
-            <p>ID de pedido: <strong>{orderId}</strong></p>
+            <p> <strong>{orderId}</strong></p>
             <p>Fecha y hora: <strong>{order.fecha_pedido}</strong></p>
             <p>Método de pago: <strong>PayPal</strong></p>
             <p>Estado de pago: <strong>Completado</strong></p>

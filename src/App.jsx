@@ -249,6 +249,11 @@ useEffect(() => {
         <Route path="/registro" element={<RegistroComponent />} />
           <Route path="/" element={< LandingPage/>} />
           <Route path="/quienes-somos" element={<QuienesSomos />} />
+          <Route path="/confirmacion/:orderId" element={
+          <Suspense fallback={<div>Cargando confirmación...</div>}>
+            <Confirmation />
+          </Suspense>
+        } />
 
         <Route element={<DashboardLayout cartCount={cartCount} />}>
         
@@ -264,11 +269,7 @@ useEffect(() => {
           <Route path="/checkout" element={<Checkout cartItems={cart} />} />
           <Route path="/dashboard-vendor" element={<VendorDashboard />} />
           <Route path="/dashboard-admin" element={<AdminDashboard />} />
-          <Route path="/confirmacion/:orderId" element={
-          <Suspense fallback={<div>Cargando confirmación...</div>}>
-            <Confirmation />
-          </Suspense>
-        } />
+
           <Route path="/notifications" component={NotificationBell} />
           <Route path="/paypal" element={<PayPalButtonComponent />} />
           <Route path="/test-notifications" element={<NotificationTester />} />

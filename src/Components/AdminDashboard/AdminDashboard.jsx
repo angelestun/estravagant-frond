@@ -7,8 +7,7 @@ import {
 } from 'recharts';
 import { Users, Store, ShoppingCart, DollarSign } from 'lucide-react';
 import { useConnectivity } from '../../context/ConnectivityProvider';
-import API_URL from '../config';
-
+import API_URL from '../../config';
 
 
 const COLORS = {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area, PieChart, Pie, Cell } from 'recharts';
 import { Package, ShoppingCart, DollarSign, Percent, Tag } from 'lucide-react';
 import { useConnectivity } from '../../context/ConnectivityProvider';
-import API_URL from '../config';
+import API_URL from '../../config';
 
 
 

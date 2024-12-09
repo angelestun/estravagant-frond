@@ -3,15 +3,10 @@ import { FaTrash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom'; 
 import axios from 'axios';
 import './CartComponent.css';
-import { useConnectivity } from '../../context/ConnectivityProvider';
-
+import { useConnectivity } from '../../context/ConnectivityProvider'; 
 
 
 const CartComponent = ({ cartItems, setCartItems }) => {
-
-    const defaultImage = "/images/default-product.png"; 
-    
-
     const { isOnline, showNotification } = useConnectivity();  
     const [productsWithoutOffers, setProductsWithoutOffers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -154,6 +149,7 @@ const CartComponent = ({ cartItems, setCartItems }) => {
     }, [userData, isOnline]);
 
     useEffect(() => {
+        console.log('Estado de conexión:', isOnline);
     }, [isOnline]);
 
     const handleCheckout = () => {
@@ -333,6 +329,7 @@ const CartComponent = ({ cartItems, setCartItems }) => {
             );
         }
     };
+            
 
     
     useEffect(() => {
@@ -531,12 +528,15 @@ const CartComponent = ({ cartItems, setCartItems }) => {
                         return (
                             <div key={item.ID_Producto} className="cart-item">
                                 <img 
-                                    src={item.Imagen || defaultImage}
+                                    src={item.Imagen?.trim() ? 
+                                        `https://extravagant-back-1.onrender.com/uploads/products/${item.Imagen}` : 
+                                        'http://via.placeholder.com/150'
+                                    } 
                                     alt={item.Nombre_Producto || "Producto sin nombre"} 
                                     className="cart-item-image"
                                     onError={(e) => {
                                         e.target.onerror = null;
-                                        e.target.src = defaultImage;
+                                        e.target.src = 'http://via.placeholder.com/150';
                                     }}
                                 />
                                 <div className="cart-item-details">
@@ -599,19 +599,22 @@ const CartComponent = ({ cartItems, setCartItems }) => {
                     })}
 
                    
-{productsWithoutOffers.length > 0 && (
+                    {productsWithoutOffers.length > 0 && (
                         <div>
                             {productsWithoutOffers.map((item) => {
                                 const subtotal = (item.Precio * item.Cantidad).toFixed(2);
                                 return (
                                     <div key={item.ID_Producto} className="cart-item">
                                         <img 
-                                            src={item.Imagen || defaultImage}
+                                            src={item.Imagen?.trim() ? 
+                                                `https://extravagant-back-1.onrender.com/uploads/products/${item.Imagen}` : 
+                                                'http://via.placeholder.com/150'
+                                            } 
                                             alt={item.Nombre_Producto || "Producto sin nombre"} 
                                             className="cart-item-image"
                                             onError={(e) => {
                                                 e.target.onerror = null;
-                                                e.target.src = defaultImage;
+                                                e.target.src = 'http://via.placeholder.com/150';
                                             }}
                                         />
                                         <div className="cart-item-details">
@@ -653,27 +656,58 @@ const CartComponent = ({ cartItems, setCartItems }) => {
                     )}
                 </div>
             )}
-                    {(cartItems.length > 0 || productsWithoutOffers.length > 0) && !isLoading && (
-                        <div className="summary-container">
-                            <h3>Total: ${formatNumber(calculateTotal().toFixed(2))}</h3>
-                            <button 
-                                className={`continue-button ${!isOnline ? 'offline-button' : ''}`}
-                                onClick={() => {
-                                    if (!isOnline) {
-                                        showNotification(
-                                            'Conexión Requerida',
-                                            'Se necesita conexión a Internet para continuar con la compra',
-                                            'warning'
-                                        );
-                                        return;
-                                    }
-                                    handleCheckout();
-                                }}
-                                disabled={isLoading}
-                            >
-                                Continuar Compra
-                            </button>
-                        </div>
+            {(cartItems.length > 0 || productsWithoutOffers.length > 0) && !isLoading && (
+    <div className="summary-container">
+        <h3>Total: ${formatNumber(calculateTotal().toFixed(2))}</h3>
+        <button 
+            className={`continue-button ${!isOnline ? 'offline-button' : ''}`}
+            onClick={async () => {
+                if (!isOnline) {
+                    if ('Notification' in window) {
+                        try {
+                            const permission = await Notification.requestPermission();
+                            if (permission === 'granted') {
+                                const notification = new Notification('Sin Conexión', {
+                                    body: 'No puedes continuar con la compra sin conexión a internet.',
+                                    icon: '/icon-192x192.png'
+                                });
+                                
+                                setTimeout(() => {
+                                    notification.close();
+                                }, 6000);
+                            }
+                        } catch (error) {
+                            console.error('Error al mostrar notificación:', error);
+                        }
+                    }
+                    return;
+                }
+
+                // Si hay conexión, mostrar notificación y proceder
+                if ('Notification' in window) {
+                    try {
+                        const permission = await Notification.requestPermission();
+                        if (permission === 'granted') {
+                            const notification = new Notification('Procesando Compra', {
+                                body: 'Redirigiendo al proceso de compra...',
+                                icon: '/icon-192x192.png'
+                            });
+                            
+                            setTimeout(() => {
+                                notification.close();
+                            }, 6000);
+                        }
+                    } catch (error) {
+                        console.error('Error al mostrar notificación:', error);
+                    }
+                }
+                navigate('/checkout', { state: { cartItems: [...cartItems, ...productsWithoutOffers] } });
+            }}
+            disabled={isLoading}
+                >
+            Continuar Compra
+                </button>
+                 </div>
                     )}
                     </div>
                 );

@@ -23,14 +23,13 @@ const SellerProfileComponent = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [currentTiendaId, setCurrentTiendaId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  
   const fetchTiendas = async () => {
     if (!userId || !isOnline) return;
-
+  
     try {
-      const response = await axios.get(`https://extravagant-back-1.onrender.com/tienda`, {
-        params: { ID_Usuario: userId }
-      });
+      // Modificar esta línea para usar el endpoint correcto
+      const response = await axios.get(`https://extravagant-back-1.onrender.com/tienda/${userId}`);
       if (response.data) {
         setTiendas(Array.isArray(response.data) ? response.data : [response.data]);
       }

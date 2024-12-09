@@ -13,7 +13,6 @@ const ProductosComponent = () => {
   const [descripcionExpandida, setDescripcionExpandida] = useState({});
   const { isOnline, showNotification } = useConnectivity();
   const [loading, setLoading] = useState(true);
-  const [imageError, setImageError] = useState({});
   const [paginaActual, setPaginaActual] = useState(1);
   const productosPorPagina = 6;
 
@@ -25,7 +24,6 @@ const ProductosComponent = () => {
     Talla: '',
     Color: '',
     Imagen: '',
-    ImagenUrl: '',
     Categoria: '',
     Marca: '',
   };
@@ -33,11 +31,6 @@ const ProductosComponent = () => {
   const [nuevoProducto, setNuevoProducto] = useState(initialProductoState);
   const [notificacion, setNotificacion] = useState('');
   const [imagePreview, setImagePreview] = useState(null);
-
-  const validateImgurUrl = (url) => {
-    const imgurRegex = /^https?:\/\/(?:i\.)?imgur\.com\/[a-zA-Z0-9]{7}(?:\.[a-zA-Z]{3,4})?$/;
-    return imgurRegex.test(url);
-  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -89,61 +82,24 @@ const ProductosComponent = () => {
     }
   };
 
-  const handleInputChange = (event) => {
-    setFiltro(event.target.value);
-  };
-
-  const handleInputChangeNuevoProducto = (e) => {
-    const { name, value } = e.target;
-    setNuevoProducto({ ...nuevoProducto, [name]: value });
-  };
-
-  const handleImageUrlChange = (e) => {
-    const url = e.target.value.trim();
-    
-    // Si la URL está vacía, limpiamos los campos de imagen
-    if (!url) {
-      setNuevoProducto({
-        ...nuevoProducto,
-        ImagenUrl: '',
-        Imagen: ''
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+      const imageUrl = `/uploads/${file.name}`;
+      setImagePreview(URL.createObjectURL(file));
+      setNuevoProducto({ 
+        ...nuevoProducto, 
+        Imagen: imageUrl 
       });
+    } else {
+      alert('Por favor, selecciona un archivo de imagen.');
+      setNuevoProducto({ ...nuevoProducto, Imagen: null });
       setImagePreview(null);
-      setImageError({});
-      return;
-    }
-    
-    let processedUrl = url;
-    if (url.includes('imgur.com')) {
-      processedUrl = url.replace(/(?:https?:\/\/)?(?:www\.)?imgur\.com/, 'https://i.imgur.com');
-      if (!processedUrl.match(/\.(jpg|jpeg|png|gif)$/i)) {
-        processedUrl += '.jpg';
-      }
-    }
-
-    setNuevoProducto({
-      ...nuevoProducto,
-      ImagenUrl: processedUrl,
-      Imagen: processedUrl,
-    });
-
-    if (processedUrl) {
-      const img = new Image();
-      img.onload = () => {
-        setImagePreview(processedUrl);
-        setImageError(prev => ({...prev, [processedUrl]: false}));
-        setNotificacion('');
-      };
-      img.onerror = () => {
-        setImageError(prev => ({...prev, [processedUrl]: true}));
-        setNotificacion('La URL de la imagen no es válida o la imagen no está disponible');
-      };
-      img.src = processedUrl;
     }
   };
+
   const validarCampos = () => {
     const { Nombre_Producto, Descripcion, Precio, Stock, Talla, Color, Categoria, Marca } = nuevoProducto;
-    // Removemos ImagenUrl de la validación requerida
     if (!Nombre_Producto || !Descripcion || !Precio || !Stock || !Talla || !Color || !Categoria || !Marca) {
       alert('Por favor, completa todos los campos obligatorios.');
       return false;
@@ -154,18 +110,9 @@ const ProductosComponent = () => {
     }
     return true;
   };
+
   const handleAgregarProducto = async (e) => {
     e.preventDefault();
-    if (!isOnline) {
-      showNotification('Conexión Requerida', 'Se necesita conexión a Internet para agregar productos', 'warning');
-      return;
-    }
-    
-    if (!validateImgurUrl(nuevoProducto.ImagenUrl)) {
-      setNotificacion('Por favor, utiliza una URL válida de Imgur para la imagen');
-      return;
-    }
-    
     if (!validarCampos()) return;
 
     try {
@@ -173,18 +120,23 @@ const ProductosComponent = () => {
         ...nuevoProducto,
         ID_Usuario: userData,
         ID_Tienda: idTienda,
-        Imagen: nuevoProducto.ImagenUrl,
       };
 
       const response = await axios.post('https://extravagant-back-1.onrender.com/productos', productData);
-      setProductos(prevProductos => [...prevProductos, { ...nuevoProducto, ID_Producto: response.data.id }]);
+
+      setProductos(prevProductos => [
+        ...prevProductos,
+        { ...nuevoProducto, ID_Producto: response.data.id }
+      ]);
+
       handleCerrarModal();
       setNotificacion('Producto agregado con éxito.');
       obtenerProductos();
     } catch (error) {
-      setNotificacion('Error al agregar producto: ' + (error.response ? error.response.data.error : 'Error de conexión.'));
+      setNotificacion('Error al agregar producto: ' + (error.response?.data?.error || 'Error de conexión'));
     }
   };
+
   const handleEditProducto = (producto) => {
     if (!isOnline) {
       showNotification(
@@ -194,41 +146,31 @@ const ProductosComponent = () => {
       );
       return;
     }
+
     setNuevoProducto({
-      ...producto,
-      ImagenUrl: producto.Imagen
+      ...producto
     });
     setCurrentProducto(producto.ID_Producto);
     setIsEditMode(true);
     setModalVisible(true);
     setImagePreview(producto.Imagen);
   };
-
   const handleActualizarProducto = async (e) => {
     e.preventDefault();
-    if (!validateImgurUrl(nuevoProducto.ImagenUrl)) {
-      setNotificacion('Por favor, utiliza una URL válida de Imgur para la imagen');
-      return;
-    }
     if (!validarCampos()) return;
 
     try {
-      const response = await axios.put(`https://extravagant-back-1.onrender.com/productos/${currentProducto}`, {
-        ...nuevoProducto,
-        Imagen: nuevoProducto.ImagenUrl
-      });
+      await axios.put(`https://extravagant-back-1.onrender.com/productos/${currentProducto}`, nuevoProducto);
 
       setProductos(productos.map(prod =>
-        prod.ID_Producto === currentProducto
-          ? { ...prod, ...nuevoProducto, Imagen: nuevoProducto.ImagenUrl }
-          : prod
+        prod.ID_Producto === currentProducto ? { ...prod, ...nuevoProducto } : prod
       ));
 
       handleCerrarModal();
       setNotificacion('Producto actualizado con éxito.');
       obtenerProductos();
     } catch (error) {
-      setNotificacion('Error al actualizar producto: ' + (error.response ? error.response.data.error : 'Error de conexión.'));
+      setNotificacion('Error al actualizar producto: ' + (error.response?.data?.error || 'Error de conexión'));
     }
   };
 
@@ -247,7 +189,7 @@ const ProductosComponent = () => {
         setProductos(productos.filter(producto => producto.ID_Producto !== id));
         setNotificacion('Producto eliminado con éxito.');
       } catch (error) {
-        setNotificacion('Error al eliminar producto: ' + (error.response ? error.response.data.error : 'Error de conexión.'));
+        setNotificacion('Error al eliminar producto: ' + (error.response?.data?.error || 'Error de conexión'));
       }
     }
   };
@@ -261,52 +203,13 @@ const ProductosComponent = () => {
     setImagePreview(null);
   };
 
-  const renderProductImage = (imageUrl) => {
-    if (!imageUrl) {
-      return (
-        <div className="h-20 w-20 bg-gray-200 rounded flex items-center justify-center">
-          <span className="text-gray-500 text-xs text-center">Sin imagen</span>
-        </div>
-      );
-    }
-
-    return (
-      <div className="relative">
-        <img
-          src={imageUrl}
-          alt="Producto"
-          className="h-20 w-20 object-cover rounded"
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src = '/assets/placeholder.jpg';
-          }}
-        />
-      </div>
-    );
+  const handleInputChange = (event) => {
+    setFiltro(event.target.value);
   };
 
-
-  const renderImagePreview = () => {
-    if (!imagePreview) return null;
-
-    return (
-      <div className="mt-2">
-        <img
-          src={imagePreview}
-          alt="Vista previa"
-          className="h-32 w-32 object-cover rounded-lg border-2 border-purple-500"
-          onError={(e) => {
-            e.target.src = '/assets/placeholder.jpg';
-            setImageError({...imageError, [nuevoProducto.ImagenUrl]: true});
-          }}
-        />
-        {!validateImgurUrl(imagePreview) && (
-          <p className="text-red-500 text-sm mt-1">
-            Por favor, utiliza una URL válida de Imgur (ejemplo: https://i.imgur.com/abcdef.jpg)
-          </p>
-        )}
-      </div>
-    );
+  const handleInputChangeNuevoProducto = (e) => {
+    const { name, value } = e.target;
+    setNuevoProducto({ ...nuevoProducto, [name]: value });
   };
 
   const productosFiltrados = productos.filter(producto =>
@@ -330,6 +233,30 @@ const ProductosComponent = () => {
   };
 
   const totalPaginas = Math.ceil(productosFiltrados.length / productosPorPagina);
+
+  const renderProductImage = (producto) => {
+    if (!producto.Imagen) {
+      return (
+        <div className="h-20 w-20 bg-gray-200 rounded flex items-center justify-center">
+          <span className="text-gray-500 text-xs text-center">Sin imagen</span>
+        </div>
+      );
+    }
+
+    return (
+      <div className="relative">
+        <img
+          src={producto.Imagen}
+          alt="Producto"
+          className="h-20 w-20 object-cover rounded"
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = '/assets/placeholder.jpg';
+          }}
+        />
+      </div>
+    );
+  };
 
   return (
     <div className="table-card">
@@ -360,18 +287,18 @@ const ProductosComponent = () => {
         
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+            <thead className="bg-purple-600">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descripción</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Talla</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Color</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoría</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Marca</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Imagen</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Nombre</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Descripción</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Precio</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Stock</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Talla</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Color</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Categoría</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Marca</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Imagen</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Acciones</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -391,7 +318,7 @@ const ProductosComponent = () => {
                   <td className="px-6 py-4 whitespace-nowrap">{producto.Categoria}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{producto.Marca}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {renderProductImage(producto.Imagen)}
+                    {renderProductImage(producto)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap space-x-2">
                     <button 
@@ -431,9 +358,9 @@ const ProductosComponent = () => {
       </div>
 
       {modalVisible && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="bg-gradient-to-r from-purple-600 to-purple-800 px-6 py-4 flex justify-between items-center rounded-t-lg">
+            <div className="bg-gradient-to-r from-purple-600 to-purple-800 px-6 py-4 flex justify-between items-center">
               <h2 className="text-xl font-semibold text-white">
                 {isEditMode ? 'Editar Producto' : 'Agregar Nuevo Producto'}
               </h2>
@@ -565,18 +492,35 @@ const ProductosComponent = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    URL de Imagen (Imgur)
+                    {isEditMode ? 'Cambiar Imagen (opcional)' : 'Imagen del Producto'}
                   </label>
-                  <input
-                    type="text"
-                    name="ImagenUrl"
-                    value={nuevoProducto.ImagenUrl}
-                    onChange={handleImageUrlChange}
-                    placeholder="https://i.imgur.com/ejemplo.jpg"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    required
-                  />
-                  {renderImagePreview()}
+                  <div className="flex items-center space-x-4">
+                    <div className="flex-1">
+                      <input
+                        type="file"
+                        onChange={handleFileChange}
+                        accept="image/*"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        required={!isEditMode && !nuevoProducto.Imagen}
+                      />
+                      <p className="mt-1 text-sm text-gray-500">
+                        Tamaño recomendado: 1000x1000 px
+                      </p>
+                    </div>
+                    <div className="flex-shrink-0">
+                      {imagePreview && (
+                        <img
+                          src={imagePreview}
+                          alt="Vista previa"
+                          className="w-20 h-20 object-cover rounded-lg border-2 border-purple-500"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = '/assets/placeholder.jpg';
+                          }}
+                        />
+                      )}
+                    </div>
+                  </div>
                 </div>
 
                 <button

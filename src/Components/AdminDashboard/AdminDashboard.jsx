@@ -7,6 +7,7 @@ import {
 } from 'recharts';
 import { Users, Store, ShoppingCart, DollarSign } from 'lucide-react';
 import { useConnectivity } from '../../context/ConnectivityProvider';
+import API_URL from '../config';
 
 
 
@@ -144,14 +145,13 @@ const AdminDashboard = () => {
           return;
         }
         const [statsRes, storeRes, promoRes, rolesRes, monthlyRes, couponRes] = await Promise.all([
-          fetch('/api/admin/stats'),
-          fetch('/api/admin/store-stats'),
-          fetch('/api/admin/promotions-stats'),
-          fetch('/api/admin/user-role-distribution'),
-          fetch(`/api/admin/users-monthly?months=${dateRange}`), 
-          fetch('/api/admin/coupons-usage')
+          fetch(`${API_URL}/api/admin/stats`),
+          fetch(`${API_URL}/api/admin/store-stats`),
+          fetch(`${API_URL}/api/admin/promotions-stats`),
+          fetch(`${API_URL}/api/admin/user-role-distribution`),
+          fetch(`${API_URL}/api/admin/users-monthly?months=${dateRange}`), 
+          fetch(`${API_URL}/api/admin/coupons-usage`)
         ]);
-
         const [statsData, storeData, promoData, rolesData, monthlyData, couponsData] = await Promise.all([
           statsRes.json(),
           storeRes.json(),

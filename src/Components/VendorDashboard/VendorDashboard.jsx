@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area, PieChart, Pie, Cell } from 'recharts';
 import { Package, ShoppingCart, DollarSign, Percent, Tag } from 'lucide-react';
 import { useConnectivity } from '../../context/ConnectivityProvider';
+import API_URL from '../config';
+
 
 
 const formatCurrency = (value) => {
@@ -117,7 +119,7 @@ const VendorDashboard = () => {
         }
 
         
-        const salesResponse = await fetch(`/api/vendor/${userId}/daily-sales-trend?days=${selectedTimeRange}`);
+        const salesResponse = await fetch(`${API_URL}/api/vendor/${userId}/daily-sales-trend?days=${selectedTimeRange}`);
         const salesData = await salesResponse.json();
         const formattedSalesData = salesData.map(sale => ({
           ...sale,
@@ -125,23 +127,23 @@ const VendorDashboard = () => {
         }));
         setDailySales(formattedSalesData);
 
-        const statsResponse = await fetch(`/api/vendor/${userId}/stats`);
+        const statsResponse = await fetch(`${API_URL}/api/vendor/${userId}/stats`);
         const statsData = await statsResponse.json();
         setStats(statsData);
 
-        const topProductsResponse = await fetch(`/api/vendor/${userId}/stats`);
+        const topProductsResponse = await fetch(`${API_URL}/api/vendor/${userId}/stats`);
         const topProductsData = await topProductsResponse.json();
         setTopProducts(topProductsData.topProducts);
 
-        const cartProductsResponse = await fetch(`/api/vendor/${userId}/products-in-cart`);
+        const cartProductsResponse = await fetch(`${API_URL}/api/vendor/${userId}/products-in-cart`);
         const cartProductsData = await cartProductsResponse.json();
         setTopProductsInCart(cartProductsData);
 
-        const couponsResponse = await fetch(`/api/vendor/${userId}/active-coupons`);
+        const couponsResponse = await fetch(`${API_URL}/api/vendor/${userId}/active-coupons`);
         const couponsData = await couponsResponse.json();
         setStats(prevStats => ({ ...prevStats, activeCoupons: couponsData.length }));
         
-        const couponsRes = await fetch(`/api/vendor/${userId}/coupons-usage`);
+        const couponsRes = await fetch(`${API_URL}/api/vendor/${userId}/coupons-usage`);
         const couponData = await couponsRes.json();
         setCouponStats(couponData);
         

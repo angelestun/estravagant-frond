@@ -54,12 +54,9 @@ const ProductPreviewModal = ({ product, onClose, handleAddToCart }) => {
         <div className="custom-modal-body">
           <div className="custom-modal-image-container">
             <img 
-              src={product.Imagen?.startsWith('http') ? product.Imagen : '/assets/placeholder.jpg'} 
+              src={`http://localhost:3000/uploads/products/${product.Imagen}`} 
               alt={product.Nombre_Producto} 
-              className="custom-modal-product-image"
-              onError={(e) => {
-                e.target.src = '/assets/placeholder.jpg';
-              }}
+              className="custom-modal-product-image" 
             />
           </div>
           <div className="custom-modal-product-info">
